@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 210" fill="none" role="img" aria-label="Web Labs">
+  <defs>
+    <linearGradient id="wl-w" x1="40" y1="36" x2="240" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7FFFD4"/>
+      <stop offset="42%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#00BFFF"/>
+    </linearGradient>
+  </defs>
+
+  <g
+    stroke="url(#wl-w)"
+    stroke-width="30"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  >
+    <path d="M52 48 L104 148 L156 48" opacity="0.86"/>
+    <path d="M124 48 L176 148 L228 48" opacity="0.86"/>
+  </g>
+
+  <text
+    x="140"
+    y="196"
+    text-anchor="middle"
+    font-family="'Space Grotesk', 'Heebo', system-ui, sans-serif"
+    font-size="36"
+    font-weight="600"
+    letter-spacing="-0.02em"
+  >
+    <tspan fill="#FFFFFF">Web</tspan><tspan fill="#00BFFF"> Labs</tspan>
+  </text>
+</svg>
