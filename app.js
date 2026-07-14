@@ -337,6 +337,7 @@
     simpleUser: null,
     sessionId: null,
     mode: null,
+    localStream: null,
   };
 
   function setTalkHint(key) {
@@ -349,12 +350,26 @@
     talkHint.hidden = heroTalkBtn.hidden;
   }
 
+  function stopLocalStream() {
+    const stream = rtc.localStream;
+    rtc.localStream = null;
+    if (!stream) return;
+    stream.getTracks().forEach((tr) => {
+      try {
+        tr.stop();
+      } catch {
+        /* ignore */
+      }
+    });
+  }
+
   async function cleanupRtc() {
     const user = rtc.simpleUser;
     rtc.simpleUser = null;
     rtc.sessionId = null;
     talkActive = false;
     heroTalkBtn.classList.remove('is-live');
+    stopLocalStream();
     if (!user) return;
     try {
       await user.hangup().catch(() => {});
@@ -391,6 +406,32 @@
     throw lastErr || new Error('sipjs_unavailable');
   }
 
+  function getPeerConnection(simpleUser) {
+    return (
+      simpleUser?.session?.sessionDescriptionHandler?.peerConnection ||
+      simpleUser?.sessionManager?.managedSessions?.[0]?.session?.sessionDescriptionHandler
+        ?.peerConnection ||
+      null
+    );
+  }
+
+  async function attachLiveMic(simpleUser, stream) {
+    const track = stream?.getAudioTracks?.()?.[0];
+    if (!track) return false;
+    track.enabled = true;
+    const pc = getPeerConnection(simpleUser);
+    if (!pc || typeof pc.getSenders !== 'function') return false;
+    const sender = pc.getSenders().find((s) => !s.track || s.track.kind === 'audio');
+    if (sender && typeof sender.replaceTrack === 'function') {
+      await sender.replaceTrack(track);
+      return true;
+    }
+    pc.getSenders().forEach((s) => {
+      if (s.track && s.track.kind === 'audio') s.track.enabled = true;
+    });
+    return Boolean(sender);
+  }
+
   async function startLiveWebRtc() {
     const userId = encodeURIComponent(CFG.webrtcUserId || CFG.defaultAgentId);
     const statusRes = await fetch(`${apiBase()}/api/public/web-call/${userId}/status`);
@@ -423,6 +464,25 @@
     const dial = session.dial || 'weblabs';
     const target = dial.includes('@') ? dial : `sip:${dial}@${domain}`;
 
+    // Keep mic open for the whole call. Stopping tracks after "warm-up" left
+    // SIP.js sending silence Opus frames → agent never hears the caller.
+    let localStream;
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+        video: false,
+      });
+    } catch {
+      const err = new Error('microphone_denied');
+      err.status = 503;
+      throw err;
+    }
+    rtc.localStream = localStream;
+
     const simpleUser = new SimpleUser(session.wsUrl, {
       aor,
       media: {
@@ -445,26 +505,9 @@
     rtc.sessionId = session.sessionId;
     rtc.mode = 'sipjs';
 
-    function enableLocalMicTracks() {
-      try {
-        const pc =
-          simpleUser.session?.sessionDescriptionHandler?.peerConnection ||
-          simpleUser.sessionManager?.managedSessions?.[0]?.session?.sessionDescriptionHandler
-            ?.peerConnection;
-        if (!pc || typeof pc.getSenders !== 'function') return;
-        pc.getSenders().forEach((sender) => {
-          if (sender.track && sender.track.kind === 'audio') {
-            sender.track.enabled = true;
-          }
-        });
-      } catch {
-        /* ignore */
-      }
-    }
-
     simpleUser.delegate = {
       onCallAnswered: () => {
-        enableLocalMicTracks();
+        attachLiveMic(simpleUser, localStream).catch(() => {});
         try {
           remoteAudio.muted = false;
           remoteAudio.volume = 1;
@@ -485,21 +528,17 @@
       },
     };
 
-    // Warm mic under the click gesture before SIP register/invite.
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-      stream.getTracks().forEach((tr) => tr.stop());
-    } catch (micErr) {
-      const err = new Error('microphone_denied');
-      err.status = 503;
-      throw err;
-    }
-
     await simpleUser.connect();
     await simpleUser.register();
     await simpleUser.call(target);
-    enableLocalMicTracks();
-    // Unlock audio element under the user gesture that started Talk.
+    await attachLiveMic(simpleUser, localStream).catch(() => {});
+    // Retry shortly — PC/senders may appear after invite negotiation.
+    setTimeout(() => {
+      attachLiveMic(simpleUser, localStream).catch(() => {});
+    }, 400);
+    setTimeout(() => {
+      attachLiveMic(simpleUser, localStream).catch(() => {});
+    }, 1200);
     try {
       remoteAudio.muted = false;
       await remoteAudio.play().catch(() => {});
