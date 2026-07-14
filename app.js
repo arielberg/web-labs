@@ -433,6 +433,7 @@
         authorizationUsername: sipUser,
         authorizationPassword: session.sipPassword,
         sessionDescriptionHandlerFactoryOptions: {
+          constraints: { audio: true, video: false },
           peerConnectionConfiguration: {
             iceServers: session.iceServers || [{ urls: 'stun:stun.l.google.com:19302' }],
           },
@@ -444,8 +445,26 @@
     rtc.sessionId = session.sessionId;
     rtc.mode = 'sipjs';
 
+    function enableLocalMicTracks() {
+      try {
+        const pc =
+          simpleUser.session?.sessionDescriptionHandler?.peerConnection ||
+          simpleUser.sessionManager?.managedSessions?.[0]?.session?.sessionDescriptionHandler
+            ?.peerConnection;
+        if (!pc || typeof pc.getSenders !== 'function') return;
+        pc.getSenders().forEach((sender) => {
+          if (sender.track && sender.track.kind === 'audio') {
+            sender.track.enabled = true;
+          }
+        });
+      } catch {
+        /* ignore */
+      }
+    }
+
     simpleUser.delegate = {
       onCallAnswered: () => {
+        enableLocalMicTracks();
         try {
           remoteAudio.muted = false;
           remoteAudio.volume = 1;
@@ -466,9 +485,20 @@
       },
     };
 
+    // Warm mic under the click gesture before SIP register/invite.
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      stream.getTracks().forEach((tr) => tr.stop());
+    } catch (micErr) {
+      const err = new Error('microphone_denied');
+      err.status = 503;
+      throw err;
+    }
+
     await simpleUser.connect();
     await simpleUser.register();
     await simpleUser.call(target);
+    enableLocalMicTracks();
     // Unlock audio element under the user gesture that started Talk.
     try {
       remoteAudio.muted = false;
