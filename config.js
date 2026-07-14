@@ -1,13 +1,11 @@
 /**
  * Web Labs site ↔ voip-v3 telephony-api (production)
  *
- * Public surface on :8443 (nginx allowlist): /health, /api/sessions*, /api/chat/turn
- * Talk (WebRTC) and outbound "call me" are not public yet — UI shows clear errors / inbound only.
+ * Public surface on :8443: /health, /api/sessions*, /api/chat/turn,
+ * /api/public/web-call/*, /asterisk-wss/ (SIP.js → Asterisk).
  *
  * Override at runtime if needed:
  *   window.WEB_LABS_CONFIG = { apiBase: 'https://...' }
- *
- * Prod also needs CORS_ORIGINS to include this site's origin.
  */
 window.WEB_LABS_CONFIG = Object.assign(
   {
@@ -21,10 +19,9 @@ window.WEB_LABS_CONFIG = Object.assign(
     defaultFlow: 'lead',
     webrtcUserId: 'shiri',
     demoMode: false,
-    /** Public API today: chat (+ sessions). Talk/outbound wait for backend allowlist. */
     features: {
       chat: true,
-      talk: false,
+      talk: true,
       outbound: false,
     },
   },

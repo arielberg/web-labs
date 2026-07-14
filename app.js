@@ -328,14 +328,12 @@
     }
   }
 
-  /* ---------- WebRTC talk ---------- */
+  /* ---------- WebRTC talk (SIP.js → Asterisk WSS) ---------- */
   const remoteAudio = document.getElementById('remoteAudio');
   let talkActive = false;
 
   const rtc = {
-    pc: null,
-    ws: null,
-    localStream: null,
+    simpleUser: null,
     sessionId: null,
     mode: null,
   };
@@ -350,38 +348,46 @@
     talkHint.hidden = heroTalkBtn.hidden;
   }
 
-  function cleanupRtc() {
-    if (rtc.ws) {
-      try {
-        if (rtc.ws.readyState === 1) rtc.ws.send(JSON.stringify({ type: 'hangup' }));
-        rtc.ws.close();
-      } catch {
-        /* ignore */
-      }
-    }
-    if (rtc.pc) {
-      try {
-        rtc.pc.close();
-      } catch {
-        /* ignore */
-      }
-    }
-    if (rtc.localStream) {
-      rtc.localStream.getTracks().forEach((tr) => tr.stop());
-    }
-    rtc.pc = null;
-    rtc.ws = null;
-    rtc.localStream = null;
+  async function cleanupRtc() {
+    const user = rtc.simpleUser;
+    rtc.simpleUser = null;
     rtc.sessionId = null;
     talkActive = false;
     heroTalkBtn.classList.remove('is-live');
+    if (!user) return;
+    try {
+      await user.hangup().catch(() => {});
+    } catch {
+      /* ignore */
+    }
+    try {
+      await user.unregister().catch(() => {});
+    } catch {
+      /* ignore */
+    }
+    try {
+      await user.disconnect().catch(() => {});
+    } catch {
+      /* ignore */
+    }
   }
 
-  function wsUrlFor(session) {
-    if (session.wsUrl?.startsWith('ws')) return session.wsUrl;
-    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = apiBase() ? new URL(apiBase()).host : location.host;
-    return `${proto}//${host}${session.wsUrl}`;
+  async function loadSipSimpleUser() {
+    const urls = [
+      'https://cdn.jsdelivr.net/npm/sip.js@0.21.2/lib/platform/web/simple-user/simple-user.js/+esm',
+      'https://cdn.jsdelivr.net/npm/sip.js@0.21.2/lib/platform/web/index.js/+esm',
+    ];
+    let lastErr;
+    for (const url of urls) {
+      try {
+        const mod = await import(url);
+        const SimpleUser = mod.SimpleUser || mod.default?.SimpleUser || mod.default;
+        if (typeof SimpleUser === 'function') return SimpleUser;
+      } catch (err) {
+        lastErr = err;
+      }
+    }
+    throw lastErr || new Error('sipjs_unavailable');
   }
 
   async function startLiveWebRtc() {
@@ -401,47 +407,54 @@
       throw err;
     }
     const session = await sessionRes.json();
-    rtc.sessionId = session.sessionId;
-    rtc.mode = 'live';
+    if (session.mode !== 'sipjs' || !session.wsUrl || !session.sipPassword) {
+      const err = new Error('unexpected session mode');
+      err.status = 503;
+      throw err;
+    }
 
-    rtc.pc = new RTCPeerConnection({ iceServers: session.iceServers || [{ urls: 'stun:stun.l.google.com:19302' }] });
-    rtc.localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    rtc.localStream.getTracks().forEach((track) => rtc.pc.addTrack(track, rtc.localStream));
+    const SimpleUser = await loadSipSimpleUser();
+    if (!SimpleUser) throw new Error('sipjs_unavailable');
 
-    rtc.pc.ontrack = (ev) => {
-      remoteAudio.srcObject = ev.streams[0];
-    };
+    const domain = session.sipDomain || new URL(apiBase()).hostname;
+    const sipUser = session.sipUser || 'weblabs_guest';
+    const aor = session.sipUri || `sip:${sipUser}@${domain}`;
+    const dial = session.dial || 'weblabs';
+    const target = dial.includes('@') ? dial : `sip:${dial}@${domain}`;
 
-    rtc.ws = new WebSocket(wsUrlFor(session));
-    rtc.pc.onicecandidate = (e) => {
-      if (e.candidate && rtc.ws?.readyState === 1) {
-        rtc.ws.send(JSON.stringify({ type: 'ice', candidate: e.candidate }));
-      }
-    };
-
-    await new Promise((resolve, reject) => {
-      rtc.ws.onopen = resolve;
-      rtc.ws.onerror = reject;
+    const simpleUser = new SimpleUser(session.wsUrl, {
+      aor,
+      media: {
+        constraints: { audio: true, video: false },
+        remote: { audio: remoteAudio },
+      },
+      userAgentOptions: {
+        authorizationUsername: sipUser,
+        authorizationPassword: session.sipPassword,
+        sessionDescriptionHandlerFactoryOptions: {
+          peerConnectionConfiguration: {
+            iceServers: session.iceServers || [{ urls: 'stun:stun.l.google.com:19302' }],
+          },
+        },
+      },
     });
 
-    rtc.ws.onmessage = async (ev) => {
-      const msg = JSON.parse(ev.data);
-      if (msg.type === 'answer' && msg.sdp) {
-        await rtc.pc.setRemoteDescription({ type: 'answer', sdp: msg.sdp });
-      } else if (msg.type === 'ice' && msg.candidate) {
-        try {
-          await rtc.pc.addIceCandidate(msg.candidate);
-        } catch {
-          /* ignore */
-        }
-      } else if (msg.type === 'hangup') {
+    rtc.simpleUser = simpleUser;
+    rtc.sessionId = session.sessionId;
+    rtc.mode = 'sipjs';
+
+    simpleUser.delegate = {
+      onCallHangup: () => {
         hangupTalk();
-      }
+      },
+      onServerDisconnect: () => {
+        hangupTalk();
+      },
     };
 
-    const offer = await rtc.pc.createOffer();
-    await rtc.pc.setLocalDescription(offer);
-    rtc.ws.send(JSON.stringify({ type: 'offer', sdp: offer.sdp }));
+    await simpleUser.connect();
+    await simpleUser.register();
+    await simpleUser.call(target);
   }
 
   async function startTalk() {
@@ -457,8 +470,11 @@
       talkActive = true;
       heroTalkBtn.classList.add('is-live');
     } catch (err) {
-      cleanupRtc();
-      setTalkHint(err?.status === 404 || err?.status === 503 ? 'talk.unavailable' : 'status.error');
+      console.warn('[talk] failed', err);
+      await cleanupRtc();
+      setTalkHint(
+        err?.status === 404 || err?.status === 503 ? 'talk.unavailable' : 'status.error'
+      );
     }
     heroTalkBtn.disabled = false;
   }
