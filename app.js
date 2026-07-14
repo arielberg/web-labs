@@ -16,6 +16,8 @@
       'talk.live': 'בשיחה — לחצו שוב לניתוק',
       'talk.demo': 'הדגמה — מיקרופון פעיל. לחצו שוב לניתוק',
       'talk.ended': 'השיחה הסתיימה',
+      'talk.unavailable': 'שיחת קול לא זמינה כרגע. נסו צ׳אט או התקשרו אלינו.',
+      'chat.error': 'לא הצלחתי לקבל מענה כרגע. נסו שוב.',
       'phone.eyebrow': 'טלפון',
       'phone.tab.out': 'התקשרו אליי',
       'phone.tab.in': 'אני אתקשר',
@@ -24,12 +26,14 @@
       'phone.notes': 'הערות (אופציונלי)',
       'phone.notesPh': 'במה נוכל לעזור?',
       'phone.requestOut': 'בקשו שהסוכן יתקשר',
+      'phone.outboundDisabled': 'בקשת שיחה יוצאת עדיין לא זמינה מהאתר. התקשרו אלינו או השתמשו בצ׳אט.',
       'phone.inboundLead': 'התקשרו למספר המשרד — שירי / מאיה יענו.',
       'phone.officeLine': 'קו משרד',
       'phone.mainLine': 'קו ראשי',
       'phone.queued': 'הבקשה נשלחה. הסוכן יתקשר בקרוב.',
       'phone.demoQueued': 'הבקשה נשמרה במצב הדגמה.',
       'phone.badPhone': 'נא להזין מספר טלפון תקין.',
+      'phone.error': 'לא הצלחנו לשלוח את הבקשה. נסו שוב מאוחר יותר.',
       'about.eyebrow': 'עלינו',
       'about.title': 'Architecture. Intelligence. Trust.',
       'about.lead': 'Web Labs מתמחה בארכיטקטורת פתרונות חדשנית ומתקדמת.\nדברו איתנו!',
@@ -38,6 +42,7 @@
       'status.live': 'פעיל',
       'status.demo': 'הדגמה',
       'status.error': 'שגיאה',
+      'status.offline': 'לא מחובר',
     },
     en: {
       'cta.talk': 'Talk',
@@ -52,6 +57,8 @@
       'talk.live': 'On call — tap again to hang up',
       'talk.demo': 'Demo — mic on. Tap again to hang up',
       'talk.ended': 'Call ended',
+      'talk.unavailable': 'Voice call is unavailable right now. Try chat or call us.',
+      'chat.error': 'Could not get a reply right now. Please try again.',
       'phone.eyebrow': 'Phone',
       'phone.tab.out': 'Call me',
       'phone.tab.in': 'I’ll call',
@@ -60,12 +67,14 @@
       'phone.notes': 'Notes (optional)',
       'phone.notesPh': 'What can we help with?',
       'phone.requestOut': 'Have the agent call me',
+      'phone.outboundDisabled': 'Outbound call-me is not available from the site yet. Call us or use chat.',
       'phone.inboundLead': 'Call the office line — Shiri / Maya will answer.',
       'phone.officeLine': 'Office line',
       'phone.mainLine': 'Main line',
       'phone.queued': 'Request sent. The agent will call shortly.',
       'phone.demoQueued': 'Saved in demo mode.',
       'phone.badPhone': 'Please enter a valid phone number.',
+      'phone.error': 'Could not send the request. Please try again later.',
       'about.eyebrow': 'About',
       'about.title': 'Architecture. Intelligence. Trust.',
       'about.lead': 'Web Labs specializes in innovative, advanced solution architecture.\nTalk to us!',
@@ -74,6 +83,7 @@
       'status.live': 'Live',
       'status.demo': 'Demo',
       'status.error': 'Error',
+      'status.offline': 'Offline',
     },
   };
 
@@ -201,58 +211,35 @@
     chatStatus.className = `status-pill${cls ? ` ${cls}` : ''}`;
   }
 
-  const demoReplies = {
-    he: [
-      'Web Labs מתמחה בארכיטקטורת מערכות, AI, אבטחה ו־Salesforce.',
-      'אפשר לדבר איתנו בקול (WebRTC) או לבקש שיחה טלפונית — מה נוח לכם?',
-      'המנכ״ל הוא אריאל ברג. הסלוגן שלנו: Architecture. Intelligence. Trust.',
-      'סוכני הקול שלנו עונים לשיחות, מתאמים פגישות ומעבירים לנציג במידת הצורך.',
-    ],
-    en: [
-      'Web Labs specializes in enterprise architecture, AI, security, and Salesforce.',
-      'You can talk by voice (WebRTC) or request a phone call — what works best?',
-      'Our CEO is Ariel Berg. Our slogan: Architecture. Intelligence. Trust.',
-      'Our voice agents answer calls, schedule meetings, and transfer to a human when needed.',
-    ],
-  };
-
-  let demoIdx = 0;
-
   async function ensureChatSession() {
     if (chatState.sessionId) return;
-    try {
-      const created = await api('/api/sessions', {
-        method: 'POST',
-        body: JSON.stringify({
-          agent_id: CFG.defaultAgentId,
-          flow_name: CFG.defaultFlow,
-          context: { source: 'web-labs-site', channel: 'chat' },
-        }),
-      });
-      const sessionId = created.session?.session_id || created.session_id;
-      const joined = await api('/api/sessions/join', {
-        method: 'POST',
-        body: JSON.stringify({
-          join_method: 'session_id',
-          join_key: sessionId,
-          channel_type: 'chat',
-          role: 'end_user',
-        }),
-      });
-      chatState.sessionId = joined.session_id || sessionId;
-      chatState.channelId = joined.channel_id;
-      chatState.token = joined.token;
-      chatState.mode = 'live';
-      setChatStatus('status.live', 'is-live');
-    } catch {
-      chatState.mode = 'demo';
-      setChatStatus('status.demo', 'is-live');
-    }
+    const created = await api('/api/sessions', {
+      method: 'POST',
+      body: JSON.stringify({
+        agent_id: CFG.defaultAgentId,
+        flow_name: CFG.defaultFlow,
+        context: { source: 'web-labs-site', channel: 'chat' },
+      }),
+    });
+    const sessionId = created.session?.session_id || created.session_id;
+    const joined = await api('/api/sessions/join', {
+      method: 'POST',
+      body: JSON.stringify({
+        join_method: 'session_id',
+        join_key: sessionId,
+        channel_type: 'chat',
+        role: 'end_user',
+      }),
+    });
+    chatState.sessionId = joined.session_id || sessionId;
+    chatState.channelId = joined.channel_id;
+    chatState.token = joined.token;
+    chatState.mode = 'live';
+    setChatStatus('status.live', 'is-live');
   }
 
   async function sendChat(text) {
     addBubble(text, 'user');
-    await ensureChatSession();
 
     const thinking = document.createElement('div');
     thinking.className = 'bubble bubble--agent bubble--thinking';
@@ -262,8 +249,10 @@
     chatInput.disabled = true;
 
     try {
-      if (chatState.mode !== 'live') {
+      try {
         await ensureChatSession();
+      } catch {
+        /* chat/turn can still work without a prior session */
       }
       const data = await api('/api/chat/turn', {
         method: 'POST',
@@ -285,47 +274,22 @@
           { user: text, assistant: reply },
         ].slice(-12);
         if (data.next_node) chatState.node = data.next_node;
+        if (data.session_id) chatState.sessionId = data.session_id;
         setChatStatus('status.live', 'is-live');
         chatState.mode = 'live';
         return;
       }
+      addBubble(t('chat.error'), 'agent');
+      setChatStatus('status.error', 'is-error');
     } catch {
       thinking.remove();
-      /* fall through */
+      addBubble(t('chat.error'), 'agent');
+      setChatStatus('status.error', 'is-error');
+      chatState.mode = 'idle';
     } finally {
       chatInput.disabled = false;
       chatInput.focus();
     }
-
-    if (chatState.mode === 'live' && chatState.token) {
-      try {
-        await api(`/api/sessions/${encodeURIComponent(chatState.sessionId)}/events`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${chatState.token}` },
-          body: JSON.stringify({
-            type: 'chat_message',
-            channel_id: chatState.channelId,
-            payload: { text, lang },
-          }),
-        });
-      } catch {
-        chatState.mode = 'demo';
-        setChatStatus('status.demo', 'is-live');
-      }
-    }
-
-    if (!CFG.demoMode) {
-      addBubble(
-        lang === 'he' ? 'לא הצלחתי לקבל מענה כרגע. נסו שוב.' : 'Could not get a reply right now. Please try again.',
-        'agent'
-      );
-      return;
-    }
-
-    const replies = demoReplies[lang] || demoReplies.he;
-    const reply = replies[demoIdx % replies.length];
-    demoIdx += 1;
-    setTimeout(() => addBubble(reply, 'agent'), 450);
   }
 
   /* ---------- WebRTC talk ---------- */
@@ -387,11 +351,19 @@
   async function startLiveWebRtc() {
     const userId = encodeURIComponent(CFG.webrtcUserId || CFG.defaultAgentId);
     const statusRes = await fetch(`${apiBase()}/api/public/web-call/${userId}/status`);
-    if (!statusRes.ok) throw new Error('webrtc unavailable');
+    if (statusRes.status === 404 || statusRes.status === 503 || !statusRes.ok) {
+      const err = new Error('webrtc unavailable');
+      err.status = statusRes.status;
+      throw err;
+    }
     const sessionRes = await fetch(`${apiBase()}/api/public/web-call/${userId}/session`, {
       method: 'POST',
     });
-    if (!sessionRes.ok) throw new Error('session failed');
+    if (!sessionRes.ok) {
+      const err = new Error('session failed');
+      err.status = sessionRes.status;
+      throw err;
+    }
     const session = await sessionRes.json();
     rtc.sessionId = session.sessionId;
     rtc.mode = 'live';
@@ -436,34 +408,22 @@
     rtc.ws.send(JSON.stringify({ type: 'offer', sdp: offer.sdp }));
   }
 
-  async function startDemoTalk() {
-    rtc.mode = 'demo';
-    rtc.localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    setTalkHint('talk.demo');
-  }
-
   async function startTalk() {
+    if (CFG.features?.talk === false) {
+      setTalkHint('talk.unavailable');
+      return;
+    }
     heroTalkBtn.disabled = true;
     setTalkHint('talk.connecting');
     try {
       await startLiveWebRtc();
       setTalkHint('talk.live');
-    } catch {
-      if (!CFG.demoMode) {
-        setTalkHint('status.error');
-        heroTalkBtn.disabled = false;
-        return;
-      }
-      try {
-        await startDemoTalk();
-      } catch {
-        setTalkHint('status.error');
-        heroTalkBtn.disabled = false;
-        return;
-      }
+      talkActive = true;
+      heroTalkBtn.classList.add('is-live');
+    } catch (err) {
+      cleanupRtc();
+      setTalkHint(err?.status === 404 || err?.status === 503 ? 'talk.unavailable' : 'status.error');
     }
-    talkActive = true;
-    heroTalkBtn.classList.add('is-live');
     heroTalkBtn.disabled = false;
   }
 
@@ -493,6 +453,12 @@
 
   async function requestOutbound(ev) {
     ev.preventDefault();
+    if (CFG.features?.outbound === false) {
+      outboundNote.textContent = t('phone.outboundDisabled');
+      outboundNote.className = 'form-note is-err';
+      setPhoneStatus('status.error', 'is-error');
+      return;
+    }
     const fd = new FormData(outboundForm);
     const name = String(fd.get('name') || '').trim();
     const phone = normalizePhone(fd.get('phone'));
@@ -511,7 +477,7 @@
         body: JSON.stringify({
           to_number: phone,
           agent_id: CFG.defaultAgentId,
-          flow_name: 'office',
+          flow_name: CFG.defaultFlow || 'lead',
           callee_name: name,
           prior_knowledge: {
             source: 'web-labs-site',
@@ -525,16 +491,9 @@
       setPhoneStatus('status.live', 'is-live');
       outboundForm.reset();
     } catch {
-      if (!CFG.demoMode) {
-        outboundNote.textContent = t('status.error');
-        outboundNote.classList.add('is-err');
-        setPhoneStatus('status.error', 'is-error');
-        return;
-      }
-      outboundNote.textContent = t('phone.demoQueued');
-      outboundNote.classList.add('is-ok');
-      setPhoneStatus('status.demo', 'is-live');
-      outboundForm.reset();
+      outboundNote.textContent = t('phone.error');
+      outboundNote.classList.add('is-err');
+      setPhoneStatus('status.error', 'is-error');
     }
   }
 
@@ -564,9 +523,12 @@
       addBubble(t('chat.welcome'), 'agent');
     }
     if (talkActive) {
-      setTalkHint(rtc.mode === 'demo' ? 'talk.demo' : 'talk.live');
+      setTalkHint('talk.live');
     }
-    setChatStatus(chatState.mode === 'demo' ? 'status.demo' : chatState.mode === 'live' ? 'status.live' : 'status.ready', chatState.mode !== 'idle' ? 'is-live' : '');
+    setChatStatus(
+      chatState.mode === 'live' ? 'status.live' : 'status.ready',
+      chatState.mode === 'live' ? 'is-live' : ''
+    );
   });
 
   menuToggle.addEventListener('click', () => {
@@ -603,10 +565,23 @@
 
   outboundForm.addEventListener('submit', requestOutbound);
 
+  async function probeApiHealth() {
+    try {
+      const res = await fetch(`${apiBase()}/health`, { method: 'GET' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setChatStatus('status.ready', '');
+      setPhoneStatus('status.ready', '');
+    } catch {
+      setChatStatus('status.offline', 'is-error');
+      setPhoneStatus('status.offline', 'is-error');
+    }
+  }
+
   setupTabs();
   applyI18n();
-  setMode('talk');
+  setMode('chat');
   addBubble(t('chat.welcome'), 'agent');
+  probeApiHealth();
 
   document.getElementById('inboundDial').href = `tel:+${CFG.inboundDidE164}`;
   document.querySelector('#inboundDial .dial-card__number').textContent = CFG.inboundDid;
