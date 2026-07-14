@@ -138,7 +138,11 @@
 
   const menuToggle = document.getElementById('menuToggle');
   const modeStrip = document.getElementById('modeStrip');
-  let currentMode = 'talk';
+  let currentMode = 'chat';
+
+  function featureEnabled(name) {
+    return CFG.features?.[name] !== false;
+  }
 
   function setMenuOpen(open) {
     document.body.classList.toggle('menu-open', open);
@@ -149,7 +153,39 @@
     document.getElementById('topTools').setAttribute('aria-hidden', open ? 'false' : 'true');
   }
 
+  function applyFeatureVisibility() {
+    document.querySelectorAll('.mode-strip__btn[data-mode]').forEach((btn) => {
+      const mode = btn.getAttribute('data-mode');
+      if (mode === 'talk') {
+        btn.hidden = !featureEnabled('talk');
+        btn.toggleAttribute('inert', !featureEnabled('talk'));
+      }
+    });
+    if (!featureEnabled('talk')) {
+      heroTalkBtn.hidden = true;
+      heroTalkBtn.classList.add('is-hidden');
+      talkHint.hidden = true;
+      talkHint.textContent = '';
+    }
+    if (!featureEnabled('outbound')) {
+      const outBtn = document.querySelector('.tabs__btn[data-tab="outbound"]');
+      const inBtn = document.querySelector('.tabs__btn[data-tab="inbound"]');
+      if (outBtn && inBtn) {
+        outBtn.hidden = true;
+        outBtn.classList.remove('is-active');
+        outBtn.setAttribute('aria-selected', 'false');
+        inBtn.classList.add('is-active');
+        inBtn.setAttribute('aria-selected', 'true');
+        outboundForm.classList.remove('is-active');
+        inboundPane.classList.add('is-active');
+      }
+    }
+  }
+
   function setMode(mode) {
+    if (mode === 'talk' && !featureEnabled('talk')) {
+      mode = 'chat';
+    }
     currentMode = mode;
 
     document.querySelectorAll('.mode-strip__btn[data-mode]').forEach((btn) => {
@@ -160,7 +196,7 @@
 
     const chatOpen = mode === 'chat';
     const phoneOpen = mode === 'phone';
-    const showMic = mode === 'talk';
+    const showMic = mode === 'talk' && featureEnabled('talk');
     const aboutOpen = mode === 'about';
 
     heroChat.classList.toggle('is-open', chatOpen);
@@ -409,8 +445,8 @@
   }
 
   async function startTalk() {
-    if (CFG.features?.talk === false) {
-      setTalkHint('talk.unavailable');
+    if (!featureEnabled('talk')) {
+      setMode('chat');
       return;
     }
     heroTalkBtn.disabled = true;
@@ -453,7 +489,7 @@
 
   async function requestOutbound(ev) {
     ev.preventDefault();
-    if (CFG.features?.outbound === false) {
+    if (!featureEnabled('outbound')) {
       outboundNote.textContent = t('phone.outboundDisabled');
       outboundNote.className = 'form-note is-err';
       setPhoneStatus('status.error', 'is-error');
@@ -550,6 +586,10 @@
   });
 
   heroTalkBtn.addEventListener('click', () => {
+    if (!featureEnabled('talk')) {
+      setMode('chat');
+      return;
+    }
     if (currentMode !== 'talk') setMode('talk');
     if (talkActive) hangupTalk();
     else startTalk();
@@ -578,6 +618,7 @@
   }
 
   setupTabs();
+  applyFeatureVisibility();
   applyI18n();
   setMode('chat');
   addBubble(t('chat.welcome'), 'agent');
