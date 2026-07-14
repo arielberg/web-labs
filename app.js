@@ -145,11 +145,12 @@
   }
 
   function setMenuOpen(open) {
+    if (open) modeStrip.removeAttribute('inert');
+    else modeStrip.setAttribute('inert', '');
+    modeStrip.classList.toggle('is-open', open);
     document.body.classList.toggle('menu-open', open);
     menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     modeStrip.setAttribute('aria-hidden', open ? 'false' : 'true');
-    if (open) modeStrip.removeAttribute('inert');
-    else modeStrip.setAttribute('inert', '');
     document.getElementById('topTools').setAttribute('aria-hidden', open ? 'false' : 'true');
   }
 
@@ -444,6 +445,19 @@
     rtc.mode = 'sipjs';
 
     simpleUser.delegate = {
+      onCallAnswered: () => {
+        try {
+          remoteAudio.muted = false;
+          remoteAudio.volume = 1;
+          const p = remoteAudio.play();
+          if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch {
+          /* ignore */
+        }
+        setTalkHint('talk.live');
+        talkActive = true;
+        heroTalkBtn.classList.add('is-live');
+      },
       onCallHangup: () => {
         hangupTalk();
       },
@@ -455,6 +469,13 @@
     await simpleUser.connect();
     await simpleUser.register();
     await simpleUser.call(target);
+    // Unlock audio element under the user gesture that started Talk.
+    try {
+      remoteAudio.muted = false;
+      await remoteAudio.play().catch(() => {});
+    } catch {
+      /* ignore */
+    }
   }
 
   async function startTalk() {
@@ -466,9 +487,8 @@
     setTalkHint('talk.connecting');
     try {
       await startLiveWebRtc();
-      setTalkHint('talk.live');
-      talkActive = true;
-      heroTalkBtn.classList.add('is-live');
+      // Stay on connecting until onCallAnswered (media up).
+      if (!talkActive) setTalkHint('talk.connecting');
     } catch (err) {
       console.warn('[talk] failed', err);
       await cleanupRtc();
