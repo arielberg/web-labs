@@ -8,9 +8,26 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=hero-timing" />
 </head>
 <body>
+  <svg class="logo-key-defs" aria-hidden="true" focusable="false" width="0" height="0">
+    <defs>
+      <!-- Near-black pixels become transparent; bright cyan/white keep alpha -->
+      <filter id="logo-black-key" color-interpolation-filters="sRGB">
+        <feColorMatrix
+          in="SourceGraphic"
+          type="matrix"
+          values="
+            1 0 0 0 0
+            0 1 0 0 0
+            0 0 1 0 0
+            4 4 4 0 -0.35"
+        />
+      </filter>
+    </defs>
+  </svg>
+
   <div class="ambient" aria-hidden="true">
     <video
       class="ambient__video"
@@ -45,11 +62,11 @@
   </button>
 
   <nav class="mode-strip" id="modeStrip" role="tablist" aria-label="מצב יצירת קשר" aria-hidden="true" inert>
-    <button type="button" class="mode-strip__btn is-active" data-mode="chat" role="tab" aria-selected="true">
+    <button type="button" class="mode-strip__btn" data-mode="chat" role="tab" aria-selected="false">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7A2.5 2.5 0 0 1 16.5 16H11l-4 3.5V16H7.5A2.5 2.5 0 0 1 5 13.5v-7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
       <span data-i18n="cta.chat">צ׳אט</span>
     </button>
-    <button type="button" class="mode-strip__btn" data-mode="talk" role="tab" aria-selected="false">
+    <button type="button" class="mode-strip__btn is-active" data-mode="talk" role="tab" aria-selected="true">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 1 1-8 0V7a4 4 0 0 1 4-4Z" stroke="currentColor" stroke-width="1.7"/><path d="M5 12a7 7 0 0 0 14 0M12 19v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
       <span data-i18n="cta.talk">דבר</span>
     </button>
@@ -61,6 +78,16 @@
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 10.5V17M12 7.5h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       <span data-i18n="about.eyebrow">עלינו</span>
     </button>
+    <div class="logo-picker" role="group" aria-label="בחירת לוגו" data-i18n-aria="logo.picker">
+      <span class="logo-picker__label" data-i18n="logo.picker">לוגו</span>
+      <button type="button" class="logo-picker__btn" data-logo="1" aria-pressed="false">1</button>
+      <button type="button" class="logo-picker__btn" data-logo="4" aria-pressed="false">4</button>
+      <button type="button" class="logo-picker__btn" data-logo="5" aria-pressed="false">5</button>
+      <button type="button" class="logo-picker__btn" data-logo="6" aria-pressed="false">6</button>
+      <button type="button" class="logo-picker__btn" data-logo="7" aria-pressed="false">7</button>
+      <button type="button" class="logo-picker__btn" data-logo="8" aria-pressed="false">8</button>
+      <button type="button" class="logo-picker__btn is-active" data-logo="9" aria-pressed="true">9</button>
+    </div>
   </nav>
 
   <main id="top">
@@ -68,7 +95,19 @@
       <div class="hero__glow" aria-hidden="true"></div>
       <div class="hero__inner">
         <div class="logo logo--hero" aria-label="Web Labs">
-          <img class="logo__img" src="logo.svg" alt="Web Labs" width="420" height="315" />
+          <video
+            id="heroLogoVideo"
+            class="logo__img logo__video"
+            autoplay
+            muted
+            playsinline
+            preload="auto"
+            poster="logo.png"
+            src="logo.mp4"
+            width="960"
+            height="540"
+            aria-label="Web Labs"
+          ></video>
         </div>
 
         <div class="hero__comms" id="heroComms">
@@ -141,7 +180,7 @@
           </div>
         </div>
 
-        <p class="hero__slogan" data-i18n="hero.slogan">המערכת שלך מתחילה כאן</p>
+        <p class="hero__slogan" data-i18n="hero.slogan">בונים מערכות. חושבים חכם.</p>
         <p class="talk-status" id="talkHint" hidden></p>
         <audio id="remoteAudio" autoplay playsinline></audio>
       </div>
@@ -164,12 +203,12 @@
 
   <footer class="footer">
     <span class="logo logo--footer">
-      <img class="logo__img" src="logo.svg" alt="Web Labs" width="96" height="72" />
+      <img class="logo__img" id="footerLogo" src="logo.png" alt="Web Labs" width="160" height="90" />
     </span>
     <p class="footer__copy" data-i18n="footer.copy">Architecture. Intelligence. Trust.</p>
   </footer>
 
-  <script src="config.js?v=20260715b"></script>
-  <script src="app.js?v=talk-mic2"></script>
+  <script src="config.js?v=20260715k"></script>
+  <script src="app.js?v=hero-order"></script>
 </body>
 </html>

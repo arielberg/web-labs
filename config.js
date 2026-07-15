@@ -24,6 +24,21 @@ window.WEB_LABS_CONFIG = Object.assign(
       talk: true,
       outbound: false,
     },
+    logos: {
+      1: { mp4: 'logo-1.mp4', poster: 'logo-1.png', label: '1' },
+      4: { mp4: 'logo-4.mp4', poster: 'logo-4.png', label: '4' },
+      5: { mp4: 'logo-5.mp4', poster: 'logo-5.png', label: '5' },
+      6: { mp4: 'logo-6.mp4', poster: 'logo-6.png', label: '6' },
+      7: { mp4: 'logo-7.mp4', poster: 'logo-7.png', label: '7' },
+      8: { mp4: 'logo-8.mp4', poster: 'logo-8.png', label: '8' },
+      9: { mp4: 'logo.mp4', poster: 'logo.png', label: '9' },
+    },
+    defaultLogo: '9',
+    logoDurationSec: 2,
+    logoLoop: false,
+    heroSloganDelayMs: 2000,
+    heroMicDelayMs: 3200,
+    heroEncourageEveryMs: 8000,
   },
   window.WEB_LABS_CONFIG || {}
 );

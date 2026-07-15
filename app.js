@@ -7,7 +7,7 @@
       'cta.talk': 'דבר',
       'cta.chat': 'צ׳אט',
       'cta.phone': 'טלפון',
-      'hero.slogan': 'המערכת שלך מתחילה כאן',
+      'hero.slogan': 'בונים מערכות. חושבים חכם.',
       'chat.eyebrow': 'צ׳אט',
       'chat.placeholder': 'כתבו בצ׳אט…',
       'chat.send': 'שלח',
@@ -35,6 +35,7 @@
       'phone.badPhone': 'נא להזין מספר טלפון תקין.',
       'phone.error': 'לא הצלחנו לשלוח את הבקשה. נסו שוב מאוחר יותר.',
       'about.eyebrow': 'עלינו',
+      'logo.picker': 'לוגו',
       'about.title': 'Architecture. Intelligence. Trust.',
       'about.lead': 'Web Labs מתמחה בארכיטקטורת פתרונות חדשנית ומתקדמת.\nדברו איתנו!',
       'footer.copy': 'Architecture. Intelligence. Trust.',
@@ -48,7 +49,7 @@
       'cta.talk': 'Talk',
       'cta.chat': 'Chat',
       'cta.phone': 'Phone',
-      'hero.slogan': 'Your system starts here',
+      'hero.slogan': 'Building systems. Thinking smart.',
       'chat.eyebrow': 'Chat',
       'chat.placeholder': 'Write in chat…',
       'chat.send': 'Send',
@@ -76,6 +77,7 @@
       'phone.badPhone': 'Please enter a valid phone number.',
       'phone.error': 'Could not send the request. Please try again later.',
       'about.eyebrow': 'About',
+      'logo.picker': 'Logo',
       'about.title': 'Architecture. Intelligence. Trust.',
       'about.lead': 'Web Labs specializes in innovative, advanced solution architecture.\nTalk to us!',
       'footer.copy': 'Architecture. Intelligence. Trust.',
@@ -138,7 +140,7 @@
 
   const menuToggle = document.getElementById('menuToggle');
   const modeStrip = document.getElementById('modeStrip');
-  let currentMode = 'chat';
+  let currentMode = 'talk';
 
   function featureEnabled(name) {
     return CFG.features?.[name] !== false;
@@ -207,6 +209,9 @@
 
     heroTalkBtn.hidden = !showMic;
     heroTalkBtn.classList.toggle('is-hidden', !showMic);
+    if (showMic && (heroTalkBtn.classList.contains('is-revealed') || performance.now() >= 3200)) {
+      heroTalkBtn.classList.add('is-revealed');
+    }
     talkHint.hidden = !showMic || !talkHint.textContent;
 
     setMenuOpen(false);
@@ -684,6 +689,86 @@
     btn.addEventListener('click', () => setMode(btn.getAttribute('data-mode')));
   });
 
+  const LOGO_KEY = 'web-labs-logo';
+  const heroLogoVideo = document.getElementById('heroLogoVideo');
+  const footerLogo = document.getElementById('footerLogo');
+  const DEFAULT_LOGOS = {
+    1: { mp4: 'logo-1.mp4', poster: 'logo-1.png' },
+    4: { mp4: 'logo-4.mp4', poster: 'logo-4.png' },
+    5: { mp4: 'logo-5.mp4', poster: 'logo-5.png' },
+    6: { mp4: 'logo-6.mp4', poster: 'logo-6.png' },
+    7: { mp4: 'logo-7.mp4', poster: 'logo-7.png' },
+    8: { mp4: 'logo-8.mp4', poster: 'logo-8.png' },
+    9: { mp4: 'logo.mp4', poster: 'logo.png' },
+  };
+
+  function logoSpec(id) {
+    const logos = { ...DEFAULT_LOGOS, ...(CFG.logos || {}) };
+    return logos[String(id)] || logos[String(CFG.defaultLogo || '1')] || DEFAULT_LOGOS['1'];
+  }
+
+  function applyLogoSpeed() {
+    if (!heroLogoVideo) return;
+    const target = Number(CFG.logoDurationSec) || 2;
+    const dur = heroLogoVideo.duration;
+    if (!Number.isFinite(dur) || dur <= 0) return;
+    const rate = Math.min(16, Math.max(0.25, dur / target));
+    heroLogoVideo.playbackRate = rate;
+  }
+
+  function setLogo(id, { persist = true, closeMenu = true } = {}) {
+    const key = String(id);
+    const spec = logoSpec(key);
+    if (!spec?.mp4 || !heroLogoVideo) return;
+
+    const bust = `v=${Date.now()}`;
+    const mp4Url = `${spec.mp4}?${bust}`;
+    const posterUrl = `${spec.poster}?${bust}`;
+
+    heroLogoVideo.pause();
+    heroLogoVideo.loop = CFG.logoLoop === true;
+    heroLogoVideo.poster = posterUrl;
+    heroLogoVideo.src = mp4Url;
+    heroLogoVideo.load();
+
+    const onReady = () => {
+      applyLogoSpeed();
+      const play = heroLogoVideo.play();
+      if (play?.catch) play.catch(() => {});
+    };
+    heroLogoVideo.addEventListener('loadedmetadata', onReady, { once: true });
+    heroLogoVideo.addEventListener(
+      'error',
+      () => console.warn('[logo] failed to load', mp4Url, heroLogoVideo.error),
+      { once: true }
+    );
+
+    if (footerLogo) footerLogo.src = posterUrl;
+
+    document.querySelectorAll('.logo-picker__btn[data-logo]').forEach((btn) => {
+      const on = btn.getAttribute('data-logo') === key;
+      btn.classList.toggle('is-active', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+
+    if (persist) {
+      try {
+        localStorage.setItem(LOGO_KEY, key);
+      } catch {
+        /* ignore */
+      }
+    }
+    if (closeMenu) setMenuOpen(false);
+  }
+
+  document.querySelectorAll('.logo-picker__btn[data-logo]').forEach((btn) => {
+    btn.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      setLogo(btn.getAttribute('data-logo'));
+    });
+  });
+
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Escape' && document.body.classList.contains('menu-open')) {
       setMenuOpen(false);
@@ -725,9 +810,74 @@
   setupTabs();
   applyFeatureVisibility();
   applyI18n();
-  setMode('chat');
+  setMode(featureEnabled('talk') ? 'talk' : 'chat');
   addBubble(t('chat.welcome'), 'agent');
   probeApiHealth();
+
+  try {
+    localStorage.setItem(LOGO_KEY, '9');
+  } catch {
+    /* ignore */
+  }
+  setLogo('9', { persist: false, closeMenu: false });
+
+  const heroSlogan = document.querySelector('.hero__slogan');
+  let micEncourage = 1;
+  let heroRevealTimers = [];
+  const sloganDelayMs = Number(CFG.heroSloganDelayMs) || 2000;
+  const micDelayMs = Number(CFG.heroMicDelayMs) || 3200;
+  const encourageEveryMs = Number(CFG.heroEncourageEveryMs) || 8000;
+
+  function clearHeroRevealTimers() {
+    heroRevealTimers.forEach((id) => clearTimeout(id));
+    heroRevealTimers = [];
+  }
+
+  function revealMicButton() {
+    if (!featureEnabled('talk') || heroTalkBtn.hidden) return;
+    heroTalkBtn.classList.add('is-revealed');
+  }
+
+  function revealSlogan() {
+    heroSlogan?.classList.add('is-revealed');
+  }
+
+  function scheduleHeroReveals() {
+    clearHeroRevealTimers();
+    heroTalkBtn.classList.remove('is-revealed', 'is-encourage-pulse');
+    heroSlogan?.classList.remove('is-revealed');
+    micEncourage = 1;
+    heroTalkBtn.style.setProperty('--mic-encourage', '1');
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      revealSlogan();
+      revealMicButton();
+      return;
+    }
+
+    // Text right after logo, then the talk button
+    heroRevealTimers.push(setTimeout(revealSlogan, sloganDelayMs));
+    heroRevealTimers.push(setTimeout(revealMicButton, micDelayMs));
+  }
+
+  scheduleHeroReveals();
+
+  setInterval(() => {
+    if (
+      !heroTalkBtn.classList.contains('is-revealed') ||
+      heroTalkBtn.hidden ||
+      talkActive ||
+      document.body.classList.contains('menu-open')
+    ) {
+      return;
+    }
+    micEncourage = Math.min(1.4, Math.round((micEncourage + 0.07) * 100) / 100);
+    heroTalkBtn.style.setProperty('--mic-encourage', String(micEncourage));
+    heroTalkBtn.classList.remove('is-encourage-pulse');
+    void heroTalkBtn.offsetWidth;
+    heroTalkBtn.classList.add('is-encourage-pulse');
+  }, encourageEveryMs);
 
   document.getElementById('inboundDial').href = `tel:+${CFG.inboundDidE164}`;
   document.querySelector('#inboundDial .dial-card__number').textContent = CFG.inboundDid;
