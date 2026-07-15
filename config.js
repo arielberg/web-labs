@@ -9,7 +9,7 @@
  */
 window.WEB_LABS_CONFIG = Object.assign(
   {
-    apiBase: 'https://151-145-92-212.sslip.io:8443',
+    apiBase: 'https://162-35-181-76.sslip.io:8443',
     companyPhone: '077-2200005',
     companyPhoneE164: '972772200005',
     inboundDid: '03-374-1324',
