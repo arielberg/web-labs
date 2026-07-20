@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const news = (await getCollection('news'))
+  .filter((n) => !n.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout
+  title="חדשות"
+  description="עדכונים וחדשות מבית Web Labs."
+  canonicalPath="/news/"
+>
+  <main class="page">
+    <header class="page__header">
+      <p class="page__eyebrow">עדכונים</p>
+      <h1>חדשות</h1>
+      <p class="page__lead">מה קורה אצלנו — השקות, שותפויות ורגעים חשובים.</p>
+    </header>
+    <ul class="content-list">
+      {
+        news.map((item) => (
+          <li>
+            <a class="content-row" href={`/news/${item.id}/`}>
+              <time datetime={item.data.date.toISOString()}>{formatDate(item.data.date)}</time>
+              <span class="content-row__body">
+                <span class="content-row__title">{item.data.title}</span>
+                <span class="content-row__excerpt">{item.data.description}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</BaseLayout>

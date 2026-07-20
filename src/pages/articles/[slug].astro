@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles
+    .filter((a) => !a.data.draft)
+    .map((article) => ({
+      params: { slug: article.id },
+      props: { article },
+    }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const published = article.data.date.toISOString();
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.data.title,
+  description: article.data.description,
+  datePublished: published,
+  dateModified: published,
+  author: { '@type': 'Organization', name: 'Web Labs' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Web Labs',
+    url: 'https://w3b-labs.com',
+  },
+  mainEntityOfPage: `https://w3b-labs.com/articles/${article.id}/`,
+};
+---
+
+<BaseLayout
+  title={article.data.title}
+  description={article.data.description}
+  canonicalPath={`/articles/${article.id}/`}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <main class="page">
+    <article class="page__article prose">
+      <header class="page__header">
+        <p class="page__eyebrow">מאמר</p>
+        <h1>{article.data.title}</h1>
+        <p class="page__meta">
+          <time datetime={published}>{formatDate(article.data.date)}</time>
+          {
+            article.data.tags.length > 0 && (
+              <span class="page__tags">
+                {article.data.tags.map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </span>
+            )
+          }
+        </p>
+        <p class="page__lead">{article.data.description}</p>
+      </header>
+      <Content />
+      <p class="page__back">
+        <a href="/articles/">← חזרה למאמרים</a>
+      </p>
+    </article>
+  </main>
+</BaseLayout>

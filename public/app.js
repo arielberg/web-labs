@@ -35,7 +35,6 @@
       'phone.badPhone': 'נא להזין מספר טלפון תקין.',
       'phone.error': 'לא הצלחנו לשלוח את הבקשה. נסו שוב מאוחר יותר.',
       'about.eyebrow': 'עלינו',
-      'logo.picker': 'לוגו',
       'about.title': 'Architecture. Intelligence. Trust.',
       'about.lead': 'Web Labs מתמחה בארכיטקטורת פתרונות חדשנית ומתקדמת.\nדברו איתנו!',
       'footer.copy': 'Architecture. Intelligence. Trust.',
@@ -77,7 +76,6 @@
       'phone.badPhone': 'Please enter a valid phone number.',
       'phone.error': 'Could not send the request. Please try again later.',
       'about.eyebrow': 'About',
-      'logo.picker': 'Logo',
       'about.title': 'Architecture. Intelligence. Trust.',
       'about.lead': 'Web Labs specializes in innovative, advanced solution architecture.\nTalk to us!',
       'footer.copy': 'Architecture. Intelligence. Trust.',
@@ -107,7 +105,7 @@
     });
     document.documentElement.lang = lang === 'he' ? 'he' : 'en';
     document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
-    document.getElementById('langToggle').textContent = lang === 'he' ? 'EN' : 'עב';
+    document.getElementById('langToggle') && (document.getElementById('langToggle').textContent = lang === 'he' ? 'EN' : 'עב');
   }
 
   async function api(path, options = {}) {
@@ -147,13 +145,14 @@
   }
 
   function setMenuOpen(open) {
+    if (!modeStrip || !menuToggle) return;
     if (open) modeStrip.removeAttribute('inert');
     else modeStrip.setAttribute('inert', '');
     modeStrip.classList.toggle('is-open', open);
     document.body.classList.toggle('menu-open', open);
     menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     modeStrip.setAttribute('aria-hidden', open ? 'false' : 'true');
-    document.getElementById('topTools').setAttribute('aria-hidden', open ? 'false' : 'true');
+    document.getElementById('topTools')?.setAttribute('aria-hidden', open ? 'false' : 'true');
   }
 
   function applyFeatureVisibility() {
@@ -164,11 +163,13 @@
         btn.toggleAttribute('inert', !featureEnabled('talk'));
       }
     });
-    if (!featureEnabled('talk')) {
+    if (!featureEnabled('talk') && heroTalkBtn) {
       heroTalkBtn.hidden = true;
       heroTalkBtn.classList.add('is-hidden');
-      talkHint.hidden = true;
-      talkHint.textContent = '';
+      if (talkHint) {
+        talkHint.hidden = true;
+        talkHint.textContent = '';
+      }
     }
     if (!featureEnabled('outbound')) {
       const outBtn = document.querySelector('.tabs__btn[data-tab="outbound"]');
@@ -179,13 +180,14 @@
         outBtn.setAttribute('aria-selected', 'false');
         inBtn.classList.add('is-active');
         inBtn.setAttribute('aria-selected', 'true');
-        outboundForm.classList.remove('is-active');
-        inboundPane.classList.add('is-active');
+        outboundForm?.classList.remove('is-active');
+        inboundPane?.classList.add('is-active');
       }
     }
   }
 
-  function setMode(mode) {
+  function setMode(mode, options = {}) {
+    const { scroll = true, allowRedirect = true } = options;
     if (mode === 'talk' && !featureEnabled('talk')) {
       mode = 'chat';
     }
@@ -202,31 +204,52 @@
     const showMic = mode === 'talk' && featureEnabled('talk');
     const aboutOpen = mode === 'about';
 
-    heroChat.classList.toggle('is-open', chatOpen);
-    heroChat.hidden = !chatOpen;
-    heroPhone.classList.toggle('is-open', phoneOpen);
-    heroPhone.hidden = !phoneOpen;
-
-    heroTalkBtn.hidden = !showMic;
-    heroTalkBtn.classList.toggle('is-hidden', !showMic);
-    if (showMic && (heroTalkBtn.classList.contains('is-revealed') || performance.now() >= 3200)) {
-      heroTalkBtn.classList.add('is-revealed');
+    if (heroChat) {
+      heroChat.classList.toggle('is-open', chatOpen);
+      heroChat.hidden = !chatOpen;
     }
-    talkHint.hidden = !showMic || !talkHint.textContent;
+    if (heroPhone) {
+      heroPhone.classList.toggle('is-open', phoneOpen);
+      heroPhone.hidden = !phoneOpen;
+    }
+
+    if (heroTalkBtn) {
+      heroTalkBtn.hidden = !showMic;
+      heroTalkBtn.classList.toggle('is-hidden', !showMic);
+      if (showMic && (heroTalkBtn.classList.contains('is-revealed') || performance.now() >= 3200)) {
+        heroTalkBtn.classList.add('is-revealed');
+      }
+    }
+    if (talkHint) talkHint.hidden = !showMic || !talkHint.textContent;
 
     setMenuOpen(false);
 
     if (aboutOpen) {
-      document.getElementById('about').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!allowRedirect) return;
+      const aboutEl = document.getElementById('about');
+      if (aboutEl && !document.querySelector('.about-page')) {
+        aboutEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (!document.querySelector('.about-page')) {
+        window.location.href = '/about/';
+      }
       return;
     }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Content pages have the contact menu but no Talk/Chat/Phone panels —
+    // only redirect when the user explicitly picks a contact mode.
+    if ((chatOpen || phoneOpen || showMic) && !heroTalkBtn && !heroChat) {
+      if (allowRedirect) window.location.href = `/?mode=${mode}`;
+      return;
+    }
 
-    if (chatOpen) {
+    if (scroll) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if (chatOpen && heroChat) {
       heroChat.classList.add('is-focus');
-      setTimeout(() => chatInput.focus(), 200);
-    } else if (phoneOpen) {
+      setTimeout(() => chatInput?.focus(), 200);
+    } else if (phoneOpen && heroPhone) {
       heroPhone.classList.add('is-focus');
     }
   }
@@ -249,6 +272,7 @@
   }
 
   function setChatStatus(key, cls) {
+    if (!chatStatus) return;
     chatStatus.textContent = t(key);
     chatStatus.className = `status-pill${cls ? ` ${cls}` : ''}`;
   }
@@ -585,6 +609,7 @@
   const inboundPane = document.getElementById('inboundPane');
 
   function setPhoneStatus(key, cls) {
+    if (!phoneStatus) return;
     phoneStatus.textContent = t(key);
     phoneStatus.className = `status-pill${cls ? ` ${cls}` : ''}`;
   }
@@ -644,6 +669,7 @@
   }
 
   function setupTabs() {
+    if (!outboundForm || !inboundPane) return;
     const buttons = document.querySelectorAll('.tabs__btn');
     buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -660,13 +686,15 @@
   }
 
   /* ---------- Wire UI ---------- */
-  document.getElementById('langToggle').addEventListener('click', () => {
+  document.getElementById('langToggle')?.addEventListener('click', () => {
     lang = lang === 'he' ? 'en' : 'he';
     applyI18n();
-    if (!chatLog.children.length) addBubble(t('chat.welcome'), 'agent');
-    else if (chatLog.children.length === 1) {
-      chatLog.innerHTML = '';
-      addBubble(t('chat.welcome'), 'agent');
+    if (chatLog) {
+      if (!chatLog.children.length) addBubble(t('chat.welcome'), 'agent');
+      else if (chatLog.children.length === 1) {
+        chatLog.innerHTML = '';
+        addBubble(t('chat.welcome'), 'agent');
+      }
     }
     if (talkActive) {
       setTalkHint('talk.live');
@@ -677,96 +705,16 @@
     );
   });
 
-  menuToggle.addEventListener('click', () => {
+  menuToggle?.addEventListener('click', () => {
     setMenuOpen(!document.body.classList.contains('menu-open'));
   });
 
-  modeStrip.addEventListener('click', (ev) => {
+  modeStrip?.addEventListener('click', (ev) => {
     if (ev.target === modeStrip) setMenuOpen(false);
   });
 
   document.querySelectorAll('.mode-strip__btn[data-mode]').forEach((btn) => {
     btn.addEventListener('click', () => setMode(btn.getAttribute('data-mode')));
-  });
-
-  const LOGO_KEY = 'web-labs-logo';
-  const heroLogoVideo = document.getElementById('heroLogoVideo');
-  const footerLogo = document.getElementById('footerLogo');
-  const DEFAULT_LOGOS = {
-    1: { mp4: 'logo-1.mp4', poster: 'logo-1.png' },
-    4: { mp4: 'logo-4.mp4', poster: 'logo-4.png' },
-    5: { mp4: 'logo-5.mp4', poster: 'logo-5.png' },
-    6: { mp4: 'logo-6.mp4', poster: 'logo-6.png' },
-    7: { mp4: 'logo-7.mp4', poster: 'logo-7.png' },
-    8: { mp4: 'logo-8.mp4', poster: 'logo-8.png' },
-    9: { mp4: 'logo.mp4', poster: 'logo.png' },
-  };
-
-  function logoSpec(id) {
-    const logos = { ...DEFAULT_LOGOS, ...(CFG.logos || {}) };
-    return logos[String(id)] || logos[String(CFG.defaultLogo || '1')] || DEFAULT_LOGOS['1'];
-  }
-
-  function applyLogoSpeed() {
-    if (!heroLogoVideo) return;
-    const target = Number(CFG.logoDurationSec) || 2;
-    const dur = heroLogoVideo.duration;
-    if (!Number.isFinite(dur) || dur <= 0) return;
-    const rate = Math.min(16, Math.max(0.25, dur / target));
-    heroLogoVideo.playbackRate = rate;
-  }
-
-  function setLogo(id, { persist = true, closeMenu = true } = {}) {
-    const key = String(id);
-    const spec = logoSpec(key);
-    if (!spec?.mp4 || !heroLogoVideo) return;
-
-    const bust = `v=${Date.now()}`;
-    const mp4Url = `${spec.mp4}?${bust}`;
-    const posterUrl = `${spec.poster}?${bust}`;
-
-    heroLogoVideo.pause();
-    heroLogoVideo.loop = CFG.logoLoop === true;
-    heroLogoVideo.poster = posterUrl;
-    heroLogoVideo.src = mp4Url;
-    heroLogoVideo.load();
-
-    const onReady = () => {
-      applyLogoSpeed();
-      const play = heroLogoVideo.play();
-      if (play?.catch) play.catch(() => {});
-    };
-    heroLogoVideo.addEventListener('loadedmetadata', onReady, { once: true });
-    heroLogoVideo.addEventListener(
-      'error',
-      () => console.warn('[logo] failed to load', mp4Url, heroLogoVideo.error),
-      { once: true }
-    );
-
-    if (footerLogo) footerLogo.src = posterUrl;
-
-    document.querySelectorAll('.logo-picker__btn[data-logo]').forEach((btn) => {
-      const on = btn.getAttribute('data-logo') === key;
-      btn.classList.toggle('is-active', on);
-      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
-
-    if (persist) {
-      try {
-        localStorage.setItem(LOGO_KEY, key);
-      } catch {
-        /* ignore */
-      }
-    }
-    if (closeMenu) setMenuOpen(false);
-  }
-
-  document.querySelectorAll('.logo-picker__btn[data-logo]').forEach((btn) => {
-    btn.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      setLogo(btn.getAttribute('data-logo'));
-    });
   });
 
   document.addEventListener('keydown', (ev) => {
@@ -775,7 +723,7 @@
     }
   });
 
-  heroTalkBtn.addEventListener('click', () => {
+  heroTalkBtn?.addEventListener('click', () => {
     if (!featureEnabled('talk')) {
       setMode('chat');
       return;
@@ -785,7 +733,7 @@
     else startTalk();
   });
 
-  chatForm.addEventListener('submit', async (ev) => {
+  chatForm?.addEventListener('submit', async (ev) => {
     ev.preventDefault();
     const text = chatInput.value.trim();
     if (!text) return;
@@ -793,7 +741,7 @@
     await sendChat(text);
   });
 
-  outboundForm.addEventListener('submit', requestOutbound);
+  outboundForm?.addEventListener('submit', requestOutbound);
 
   async function probeApiHealth() {
     try {
@@ -810,22 +758,27 @@
   setupTabs();
   applyFeatureVisibility();
   applyI18n();
-  setMode(featureEnabled('talk') ? 'talk' : 'chat');
-  addBubble(t('chat.welcome'), 'agent');
-  probeApiHealth();
 
-  try {
-    localStorage.setItem(LOGO_KEY, '9');
-  } catch {
-    /* ignore */
+  const modeParam = new URLSearchParams(window.location.search).get('mode');
+  const initialMode =
+    modeParam && ['talk', 'chat', 'phone'].includes(modeParam)
+      ? modeParam
+      : featureEnabled('talk')
+        ? 'talk'
+        : 'chat';
+  // Never redirect away from content pages during init; only sync UI state.
+  setMode(initialMode, { scroll: false, allowRedirect: false });
+
+  if (chatLog) {
+    addBubble(t('chat.welcome'), 'agent');
+    probeApiHealth();
   }
-  setLogo('9', { persist: false, closeMenu: false });
 
   const heroSlogan = document.querySelector('.hero__slogan');
   let micEncourage = 1;
   let heroRevealTimers = [];
-  const sloganDelayMs = Number(CFG.heroSloganDelayMs) || 2000;
-  const micDelayMs = Number(CFG.heroMicDelayMs) || 3200;
+  const sloganDelayMs = Number(CFG.heroSloganDelayMs) || 600;
+  const micDelayMs = Number(CFG.heroMicDelayMs) || 1600;
   const encourageEveryMs = Number(CFG.heroEncourageEveryMs) || 8000;
 
   function clearHeroRevealTimers() {
@@ -843,6 +796,7 @@
   }
 
   function scheduleHeroReveals() {
+    if (!heroTalkBtn) return;
     clearHeroRevealTimers();
     heroTalkBtn.classList.remove('is-revealed', 'is-encourage-pulse');
     heroSlogan?.classList.remove('is-revealed');
@@ -856,7 +810,7 @@
       return;
     }
 
-    // Text right after logo, then the talk button
+    // Slogan first (after logo is visible), then the talk button
     heroRevealTimers.push(setTimeout(revealSlogan, sloganDelayMs));
     heroRevealTimers.push(setTimeout(revealMicButton, micDelayMs));
   }
@@ -865,6 +819,7 @@
 
   setInterval(() => {
     if (
+      !heroTalkBtn ||
       !heroTalkBtn.classList.contains('is-revealed') ||
       heroTalkBtn.hidden ||
       talkActive ||

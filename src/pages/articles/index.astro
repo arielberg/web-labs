@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout
+  title="מאמרים"
+  description="מאמרים מבית Web Labs על ארכיטקטורה, בינה מלאכותית וסוכני קול."
+  canonicalPath="/articles/"
+>
+  <main class="page">
+    <header class="page__header">
+      <p class="page__eyebrow">תוכן</p>
+      <h1>מאמרים</h1>
+      <p class="page__lead">תובנות על מערכות, בינה מלאכותית ואמון דיגיטלי.</p>
+    </header>
+    <ul class="content-list">
+      {
+        articles.map((article) => (
+          <li>
+            <a class="content-row" href={`/articles/${article.id}/`}>
+              <time datetime={article.data.date.toISOString()}>{formatDate(article.data.date)}</time>
+              <span class="content-row__body">
+                <span class="content-row__title">{article.data.title}</span>
+                <span class="content-row__excerpt">{article.data.description}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</BaseLayout>

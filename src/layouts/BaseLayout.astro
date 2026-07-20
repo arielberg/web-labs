@@ -1,0 +1,77 @@
+---
+import '../styles/global.css';
+import Ambient from '../components/Ambient.astro';
+import SiteNav from '../components/SiteNav.astro';
+import CommsChrome from '../components/CommsChrome.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonicalPath?: string;
+  ogType?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  home?: boolean;
+  loadComms?: boolean;
+  footerFixed?: boolean;
+}
+
+const {
+  title,
+  description = 'Web Labs — ארכיטקטורה, בינה מלאכותית ואמון. סוכני קול, Salesforce ומערכות Enterprise.',
+  canonicalPath = Astro.url.pathname,
+  ogType = 'website',
+  jsonLd,
+  home = false,
+  loadComms = true,
+  footerFixed,
+} = Astro.props;
+
+const pinFooter = footerFixed ?? home;
+
+const site = Astro.site ?? new URL('https://w3b-labs.com');
+const canonical = new URL(canonicalPath, site).href;
+const pageTitle = title.includes('Web Labs') ? title : `${title} — Web Labs`;
+---
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="he_IL" />
+    <meta property="og:site_name" content="Web Labs" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+  </head>
+  <body class:list={[{ 'is-home': home, 'has-sticky-footer': pinFooter }]}>
+    <Ambient />
+    <SiteNav />
+    <CommsChrome />
+    <slot />
+    <SiteFooter fixed={pinFooter} />
+    {(home || loadComms) && (
+      <>
+        <script is:inline src="/config.js"></script>
+        <script is:inline src="/app.js"></script>
+      </>
+    )}
+  </body>
+</html>

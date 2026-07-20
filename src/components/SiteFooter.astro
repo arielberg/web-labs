@@ -1,0 +1,13 @@
+---
+interface Props {
+  fixed?: boolean;
+}
+const { fixed = false } = Astro.props;
+---
+
+<footer class:list={['footer', { 'footer--fixed': fixed }]}>
+  <span class="logo logo--footer">
+    <img class="logo__img" src="/logo.svg" alt="Web Labs" width="96" height="72" />
+  </span>
+  <p class="footer__copy" data-i18n="footer.copy">Architecture. Intelligence. Trust.</p>
+</footer>

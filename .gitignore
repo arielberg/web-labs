@@ -5,5 +5,9 @@ Thumbs.db
 .env.*
 !.env.example
 node_modules/
+dist/
+.astro/
 .idea/
 .vscode/
+index.html.bak
+*.bak

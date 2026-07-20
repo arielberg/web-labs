@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const news = await getCollection('news');
+  return news
+    .filter((n) => !n.data.draft)
+    .map((item) => ({
+      params: { slug: item.id },
+      props: { item },
+    }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const published = item.data.date.toISOString();
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: item.data.title,
+  description: item.data.description,
+  datePublished: published,
+  dateModified: published,
+  author: { '@type': 'Organization', name: 'Web Labs' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Web Labs',
+    url: 'https://w3b-labs.com',
+  },
+  mainEntityOfPage: `https://w3b-labs.com/news/${item.id}/`,
+};
+---
+
+<BaseLayout
+  title={item.data.title}
+  description={item.data.description}
+  canonicalPath={`/news/${item.id}/`}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <main class="page">
+    <article class="page__article prose">
+      <header class="page__header">
+        <p class="page__eyebrow">חדשות</p>
+        <h1>{item.data.title}</h1>
+        <p class="page__meta">
+          <time datetime={published}>{formatDate(item.data.date)}</time>
+        </p>
+        <p class="page__lead">{item.data.description}</p>
+      </header>
+      <Content />
+      <p class="page__back">
+        <a href="/news/">← חזרה לחדשות</a>
+      </p>
+    </article>
+  </main>
+</BaseLayout>

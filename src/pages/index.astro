@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CommsHero from '../components/CommsHero.astro';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 2);
+
+const news = (await getCollection('news'))
+  .filter((n) => !n.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 2);
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('he-IL', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+
+<BaseLayout
+  title="Web Labs — Architecture. Intelligence. Trust."
+  description="Web Labs — ארכיטקטורה, בינה מלאכותית ואמון. סוכני קול, Salesforce ומערכות Enterprise."
+  canonicalPath="/"
+  home
+>
+  <main id="top">
+    <section class="hero">
+      <div class="hero__glow" aria-hidden="true"></div>
+      <div class="hero__inner">
+        <div class="logo logo--hero" aria-label="Web Labs">
+          <img class="logo__img" src="/logo.svg" alt="Web Labs" width="280" height="210" />
+        </div>
+
+        <CommsHero />
+
+        <p class="hero__slogan" data-i18n="hero.slogan">בונים מערכות. חושבים חכם.</p>
+        <p class="talk-status" id="talkHint" hidden></p>
+        <audio id="remoteAudio" autoplay playsinline></audio>
+      </div>
+    </section>
+
+    {
+      (articles.length > 0 || news.length > 0) && (
+        <section class="teasers" aria-label="תוכן אחרון">
+          <div class="teasers__inner">
+            {articles.length > 0 && (
+              <div class="teasers__col">
+                <div class="teasers__head">
+                  <h2 class="teasers__title">מאמרים</h2>
+                  <a class="teasers__more" href="/articles/">הכל</a>
+                </div>
+                <ul class="teasers__list">
+                  {articles.map((article) => (
+                    <li>
+                      <a class="teaser-row" href={`/articles/${article.id}/`}>
+                        <time datetime={article.data.date.toISOString()}>{formatDate(article.data.date)}</time>
+                        <span class="teaser-row__title">{article.data.title}</span>
+                        <span class="teaser-row__excerpt">{article.data.description}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {news.length > 0 && (
+              <div class="teasers__col">
+                <div class="teasers__head">
+                  <h2 class="teasers__title">חדשות</h2>
+                  <a class="teasers__more" href="/news/">הכל</a>
+                </div>
+                <ul class="teasers__list">
+                  {news.map((item) => (
+                    <li>
+                      <a class="teaser-row" href={`/news/${item.id}/`}>
+                        <time datetime={item.data.date.toISOString()}>{formatDate(item.data.date)}</time>
+                        <span class="teaser-row__title">{item.data.title}</span>
+                        <span class="teaser-row__excerpt">{item.data.description}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </section>
+      )
+    }
+  </main>
+</BaseLayout>

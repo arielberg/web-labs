@@ -1,0 +1,83 @@
+<div class="hero__comms" id="heroComms">
+  <button type="button" class="btn-mic" id="heroTalkBtn" data-i18n-aria="cta.talk" aria-label="דבר">
+    <svg class="btn-mic__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 1 1-8 0V7a4 4 0 0 1 4-4Z" stroke="currentColor" stroke-width="1.8"
+      ></path>
+      <path d="M5 12a7 7 0 0 0 14 0M12 19v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+      ></path>
+    </svg>
+    <span class="btn-mic__waves" aria-hidden="true">
+      <i></i><i></i><i></i>
+    </span>
+  </button>
+
+  <div class="hero-chat" id="panel-chat" hidden>
+    <div class="hero-chat__head">
+      <span data-i18n="chat.eyebrow">צ׳אט</span>
+      <span class="status-pill" id="chatStatus" data-i18n="status.ready">מוכן</span>
+    </div>
+    <div class="chat" id="chatLog" role="log" aria-live="polite"></div>
+    <form class="composer hero-chat__composer" id="chatForm">
+      <input
+        type="text"
+        id="chatInput"
+        autocomplete="off"
+        data-i18n-placeholder="chat.placeholder"
+        placeholder="כתבו בצ׳אט…"
+      />
+      <button type="submit" class="btn btn--primary btn--sm" data-i18n="chat.send">שלח</button>
+    </form>
+  </div>
+
+  <div class="hero-phone" id="panel-phone" hidden>
+    <div class="hero-chat__head">
+      <span data-i18n="phone.eyebrow">טלפון</span>
+      <span class="status-pill" id="phoneStatus" data-i18n="status.ready">מוכן</span>
+    </div>
+    <div class="tabs" role="tablist">
+      <button
+        type="button"
+        class="tabs__btn is-active"
+        role="tab"
+        aria-selected="true"
+        data-tab="outbound"
+        data-i18n="phone.tab.out">התקשרו אליי</button
+      >
+      <button type="button" class="tabs__btn" role="tab" aria-selected="false" data-tab="inbound" data-i18n="phone.tab.in"
+        >אני אתקשר</button
+      >
+    </div>
+    <form class="phone-form is-active" id="outboundForm" data-pane="outbound">
+      <label>
+        <span data-i18n="phone.name">שם</span>
+        <input name="name" type="text" required autocomplete="name" />
+      </label>
+      <label>
+        <span data-i18n="phone.number">מספר טלפון</span>
+        <input name="phone" type="tel" required autocomplete="tel" placeholder="050-0000000" />
+      </label>
+      <label>
+        <span data-i18n="phone.notes">הערות (אופציונלי)</span>
+        <textarea name="notes" rows="2" data-i18n-placeholder="phone.notesPh" placeholder="במה נוכל לעזור?"
+        ></textarea>
+      </label>
+      <button type="submit" class="btn btn--primary btn--block" data-i18n="phone.requestOut"
+        >בקשו שהסוכן יתקשר</button
+      >
+      <p class="form-note" id="outboundNote"></p>
+    </form>
+    <div class="phone-form" id="inboundPane" data-pane="inbound">
+      <p class="inbound-copy" data-i18n="phone.inboundLead">
+        התקשרו למספר המשרד — שירי / מאיה יענו דרך מערכת הסוכנים שלנו.
+      </p>
+      <a class="dial-card" id="inboundDial" href="tel:+97233741324">
+        <span class="dial-card__label" data-i18n="phone.officeLine">קו משרד</span>
+        <span class="dial-card__number">03-374-1324</span>
+      </a>
+      <a class="dial-card dial-card--alt" href="tel:+972772200005">
+        <span class="dial-card__label" data-i18n="phone.mainLine">קו ראשי</span>
+        <span class="dial-card__number">077-2200005</span>
+      </a>
+    </div>
+  </div>
+</div>

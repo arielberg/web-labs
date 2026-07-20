@@ -1,0 +1,46 @@
+---
+const path = Astro.url.pathname;
+const links = [
+  { href: '/', label: 'בית', match: (p: string) => p === '/' },
+  { href: '/articles/', label: 'מאמרים', match: (p: string) => p.startsWith('/articles') },
+  { href: '/news/', label: 'חדשות', match: (p: string) => p.startsWith('/news') },
+  { href: '/about/', label: 'עלינו', match: (p: string) => p.startsWith('/about') },
+];
+---
+
+<header class="site-header" id="topbar">
+  <button
+    type="button"
+    class="menu-toggle"
+    id="menuToggle"
+    aria-expanded="false"
+    aria-controls="modeStrip"
+    aria-label="תפריט"
+  >
+    <span class="menu-toggle__bars" aria-hidden="true">
+      <i></i><i></i><i></i>
+    </span>
+  </button>
+
+  <nav class="site-nav" aria-label="ניווט ראשי">
+    {
+      links.map((link) => (
+        <a
+          href={link.href}
+          class:list={['site-nav__link', { 'is-active': link.match(path) }]}
+          aria-current={link.match(path) ? 'page' : undefined}
+        >
+          {link.label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="site-header__tools" id="topTools" aria-hidden="true"></div>
+
+  <a class="site-header__brand" href="/" aria-label="Web Labs">
+    <img class="site-header__logo" src="/logo.svg" alt="" width="48" height="36" />
+  </a>
+
+  <button type="button" class="lang-btn" id="langToggle" aria-label="Switch language">EN</button>
+</header>
