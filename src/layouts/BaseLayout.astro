@@ -59,6 +59,14 @@ const pageTitle = title.includes('Web Labs') ? title : `${title} — Web Labs`;
     {jsonLd && (
       <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     )}
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DK4J7H77J2"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-DK4J7H77J2');
+    </script>
   </head>
   <body class:list={[{ 'is-home': home, 'has-sticky-footer': pinFooter }]}>
     <Ambient />
