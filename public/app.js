@@ -136,33 +136,24 @@
   const chatForm = document.getElementById('chatForm');
   const chatInput = document.getElementById('chatInput');
 
-  const menuToggle = document.getElementById('menuToggle');
-  const modeStrip = document.getElementById('modeStrip');
+  const navToggle = document.getElementById('navToggle');
+  const siteNav = document.getElementById('siteNav');
   let currentMode = 'talk';
 
   function featureEnabled(name) {
     return CFG.features?.[name] !== false;
   }
 
-  function setMenuOpen(open) {
-    if (!modeStrip || !menuToggle) return;
-    if (open) modeStrip.removeAttribute('inert');
-    else modeStrip.setAttribute('inert', '');
-    modeStrip.classList.toggle('is-open', open);
-    document.body.classList.toggle('menu-open', open);
-    menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    modeStrip.setAttribute('aria-hidden', open ? 'false' : 'true');
-    document.getElementById('topTools')?.setAttribute('aria-hidden', open ? 'false' : 'true');
+  function setNavOpen(open) {
+    if (!navToggle) return;
+    document.body.classList.toggle('nav-open', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (siteNav) {
+      siteNav.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
   }
 
   function applyFeatureVisibility() {
-    document.querySelectorAll('.mode-strip__btn[data-mode]').forEach((btn) => {
-      const mode = btn.getAttribute('data-mode');
-      if (mode === 'talk') {
-        btn.hidden = !featureEnabled('talk');
-        btn.toggleAttribute('inert', !featureEnabled('talk'));
-      }
-    });
     if (!featureEnabled('talk') && heroTalkBtn) {
       heroTalkBtn.hidden = true;
       heroTalkBtn.classList.add('is-hidden');
@@ -193,10 +184,9 @@
     }
     currentMode = mode;
 
-    document.querySelectorAll('.mode-strip__btn[data-mode]').forEach((btn) => {
+    document.querySelectorAll('.header-cta[data-mode]').forEach((btn) => {
       const on = btn.getAttribute('data-mode') === mode;
       btn.classList.toggle('is-active', on);
-      btn.setAttribute('aria-selected', on ? 'true' : 'false');
     });
 
     const chatOpen = mode === 'chat';
@@ -222,21 +212,17 @@
     }
     if (talkHint) talkHint.hidden = !showMic || !talkHint.textContent;
 
-    setMenuOpen(false);
+    setNavOpen(false);
 
     if (aboutOpen) {
       if (!allowRedirect) return;
-      const aboutEl = document.getElementById('about');
-      if (aboutEl && !document.querySelector('.about-page')) {
-        aboutEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else if (!document.querySelector('.about-page')) {
+      if (!document.querySelector('.about-page')) {
         window.location.href = '/about/';
       }
       return;
     }
 
-    // Content pages have the contact menu but no Talk/Chat/Phone panels —
-    // only redirect when the user explicitly picks a contact mode.
+    // Content pages have contact buttons but no panels — redirect home.
     if ((chatOpen || phoneOpen || showMic) && !heroTalkBtn && !heroChat) {
       if (allowRedirect) window.location.href = `/?mode=${mode}`;
       return;
@@ -705,22 +691,26 @@
     );
   });
 
-  menuToggle?.addEventListener('click', () => {
-    setMenuOpen(!document.body.classList.contains('menu-open'));
+  navToggle?.addEventListener('click', () => {
+    setNavOpen(!document.body.classList.contains('nav-open'));
   });
 
-  modeStrip?.addEventListener('click', (ev) => {
-    if (ev.target === modeStrip) setMenuOpen(false);
-  });
-
-  document.querySelectorAll('.mode-strip__btn[data-mode]').forEach((btn) => {
+  document.querySelectorAll('.header-cta[data-mode]').forEach((btn) => {
     btn.addEventListener('click', () => setMode(btn.getAttribute('data-mode')));
   });
 
+  siteNav?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => setNavOpen(false));
+  });
+
   document.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Escape' && document.body.classList.contains('menu-open')) {
-      setMenuOpen(false);
+    if (ev.key === 'Escape' && document.body.classList.contains('nav-open')) {
+      setNavOpen(false);
     }
+  });
+
+  window.matchMedia('(min-width: 861px)').addEventListener('change', (ev) => {
+    if (ev.matches) setNavOpen(false);
   });
 
   heroTalkBtn?.addEventListener('click', () => {
@@ -823,7 +813,7 @@
       !heroTalkBtn.classList.contains('is-revealed') ||
       heroTalkBtn.hidden ||
       talkActive ||
-      document.body.classList.contains('menu-open')
+      document.body.classList.contains('nav-open')
     ) {
       return;
     }

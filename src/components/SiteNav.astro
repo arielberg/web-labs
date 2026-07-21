@@ -12,17 +12,17 @@ const links = [
   <button
     type="button"
     class="menu-toggle"
-    id="menuToggle"
+    id="navToggle"
     aria-expanded="false"
-    aria-controls="modeStrip"
-    aria-label="תפריט"
+    aria-controls="siteNav"
+    aria-label="תפריט ניווט"
   >
     <span class="menu-toggle__bars" aria-hidden="true">
       <i></i><i></i><i></i>
     </span>
   </button>
 
-  <nav class="site-nav" aria-label="ניווט ראשי">
+  <nav class="site-nav" id="siteNav" aria-label="ניווט ראשי">
     {
       links.map((link) => (
         <a
@@ -35,6 +35,29 @@ const links = [
       ))
     }
   </nav>
+
+  <div class="site-header__actions">
+    <button type="button" class="header-cta" data-mode="chat" aria-label="צ׳אט">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+        ><path
+          d="M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7A2.5 2.5 0 0 1 16.5 16H11l-4 3.5V16H7.5A2.5 2.5 0 0 1 5 13.5v-7Z"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linejoin="round"></path></svg
+      >
+      <span data-i18n="cta.chat">צ׳אט</span>
+    </button>
+    <button type="button" class="header-cta" data-mode="phone" aria-label="טלפון">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+        ><path
+          d="M7.5 3.5h3l1.2 4.2-2 1.4a12.5 12.5 0 0 0 5.2 5.2l1.4-2 4.2 1.2v3A1.8 1.8 0 0 1 18.7 18 14.5 14.5 0 0 1 6 5.3a1.8 1.8 0 0 1 1.5-1.8Z"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linejoin="round"></path></svg
+      >
+      <span data-i18n="cta.phone">טלפון</span>
+    </button>
+  </div>
 
   <div class="site-header__tools" id="topTools" aria-hidden="true"></div>
 

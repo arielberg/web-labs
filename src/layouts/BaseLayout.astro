@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import Ambient from '../components/Ambient.astro';
 import SiteNav from '../components/SiteNav.astro';
-import CommsChrome from '../components/CommsChrome.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 
 interface Props {
@@ -64,7 +63,6 @@ const pageTitle = title.includes('Web Labs') ? title : `${title} — Web Labs`;
   <body class:list={[{ 'is-home': home, 'has-sticky-footer': pinFooter }]}>
     <Ambient />
     <SiteNav />
-    <CommsChrome />
     <slot />
     <SiteFooter fixed={pinFooter} />
     {(home || loadComms) && (
