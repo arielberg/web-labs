@@ -1,10 +1,12 @@
 ---
+import HeaderTab from './HeaderTab.astro';
+
 const path = Astro.url.pathname;
 const links = [
-  { href: '/', label: 'בית', match: (p: string) => p === '/' },
-  { href: '/articles/', label: 'מאמרים', match: (p: string) => p.startsWith('/articles') },
-  { href: '/news/', label: 'חדשות', match: (p: string) => p.startsWith('/news') },
-  { href: '/about/', label: 'עלינו', match: (p: string) => p.startsWith('/about') },
+  { href: '/', label: 'בית', uid: 'home', match: (p: string) => p === '/' },
+  { href: '/articles/', label: 'מאמרים', uid: 'articles', match: (p: string) => p.startsWith('/articles') },
+  { href: '/news/', label: 'חדשות', uid: 'news', match: (p: string) => p.startsWith('/news') },
+  { href: '/about/', label: 'עלינו', uid: 'about', match: (p: string) => p.startsWith('/about') },
 ];
 ---
 
@@ -25,38 +27,35 @@ const links = [
   <nav class="site-nav" id="siteNav" aria-label="ניווט ראשי">
     {
       links.map((link) => (
-        <a
+        <HeaderTab
           href={link.href}
-          class:list={['site-nav__link', { 'is-active': link.match(path) }]}
-          aria-current={link.match(path) ? 'page' : undefined}
-        >
-          {link.label}
-        </a>
+          label={link.label}
+          uid={link.uid}
+          active={link.match(path)}
+        />
       ))
     }
   </nav>
 
   <div class="site-header__actions">
-    <button type="button" class="header-cta" data-mode="chat" aria-label="צ׳אט">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+    <HeaderTab label="צ׳אט" uid="chat" mode="chat" i18n="cta.chat" ariaLabel="צ׳אט">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
         ><path
           d="M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7A2.5 2.5 0 0 1 16.5 16H11l-4 3.5V16H7.5A2.5 2.5 0 0 1 5 13.5v-7Z"
           stroke="currentColor"
           stroke-width="1.7"
           stroke-linejoin="round"></path></svg
       >
-      <span data-i18n="cta.chat">צ׳אט</span>
-    </button>
-    <button type="button" class="header-cta" data-mode="phone" aria-label="טלפון">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+    </HeaderTab>
+    <HeaderTab label="טלפון" uid="phone" mode="phone" i18n="cta.phone" ariaLabel="טלפון">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
         ><path
           d="M7.5 3.5h3l1.2 4.2-2 1.4a12.5 12.5 0 0 0 5.2 5.2l1.4-2 4.2 1.2v3A1.8 1.8 0 0 1 18.7 18 14.5 14.5 0 0 1 6 5.3a1.8 1.8 0 0 1 1.5-1.8Z"
           stroke="currentColor"
           stroke-width="1.7"
           stroke-linejoin="round"></path></svg
       >
-      <span data-i18n="cta.phone">טלפון</span>
-    </button>
+    </HeaderTab>
   </div>
 
   <div class="site-header__tools" id="topTools" aria-hidden="true"></div>

@@ -7,8 +7,10 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host 0.0.0.0 --port 4321",
     "build": "astro build",
+    "serve": "fuser -k 4321/tcp 2>/dev/null || true; python3 -m http.server 4321 --directory dist --bind 127.0.0.1",
+    "start": "npm run build && npm run serve",
     "preview": "astro preview",
     "astro": "astro"
   },

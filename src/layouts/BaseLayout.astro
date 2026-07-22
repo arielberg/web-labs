@@ -12,7 +12,6 @@ interface Props {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   home?: boolean;
   loadComms?: boolean;
-  footerFixed?: boolean;
 }
 
 const {
@@ -23,10 +22,7 @@ const {
   jsonLd,
   home = false,
   loadComms = true,
-  footerFixed,
 } = Astro.props;
-
-const pinFooter = footerFixed ?? home;
 
 const site = Astro.site ?? new URL('https://w3b-labs.com');
 const canonical = new URL(canonicalPath, site).href;
@@ -68,11 +64,11 @@ const pageTitle = title.includes('Web Labs') ? title : `${title} — Web Labs`;
       gtag('config', 'G-DK4J7H77J2');
     </script>
   </head>
-  <body class:list={[{ 'is-home': home, 'has-sticky-footer': pinFooter }]}>
+  <body class:list={[{ 'is-home': home }]}>
     <Ambient />
     <SiteNav />
     <slot />
-    <SiteFooter fixed={pinFooter} />
+    <SiteFooter />
     {(home || loadComms) && (
       <>
         <script is:inline src="/config.js"></script>

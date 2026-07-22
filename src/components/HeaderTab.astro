@@ -1,0 +1,96 @@
+---
+interface Props {
+  label: string;
+  uid: string;
+  active?: boolean;
+  href?: string;
+  mode?: string;
+  ariaLabel?: string;
+  i18n?: string;
+}
+
+const { label, uid, active = false, href, mode, ariaLabel, i18n } = Astro.props;
+const Tag = href ? 'a' : 'button';
+const sweep = `ht-sweep-${uid}`;
+const glow = `ht-glow-${uid}`;
+const dotGlow = `ht-dot-${uid}`;
+---
+
+<Tag
+  class:list={['header-tab', { 'is-active': active }]}
+  href={href}
+  type={href ? undefined : 'button'}
+  data-mode={mode}
+  aria-label={ariaLabel || label}
+  aria-current={active && href ? 'page' : undefined}
+>
+  <svg
+    class="header-tab__fx"
+    xmlns="http://www.w3.org/2000/svg"
+    width="120"
+    height="48"
+    viewBox="0 0 120 48"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <defs>
+      <linearGradient id={sweep} x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#4ee7ff" stop-opacity="0"></stop>
+        <stop offset=".45" stop-color="#4ee7ff" stop-opacity=".15"></stop>
+        <stop offset=".5" stop-color="#8ef4ff" stop-opacity=".85"></stop>
+        <stop offset=".55" stop-color="#4ee7ff" stop-opacity=".15"></stop>
+        <stop offset="1" stop-color="#4ee7ff" stop-opacity="0"></stop>
+      </linearGradient>
+
+      <filter id={glow} x="-100%" y="-200%" width="300%" height="500%">
+        <feGaussianBlur stdDeviation="4"></feGaussianBlur>
+      </filter>
+
+      <filter id={dotGlow} x="-300%" y="-300%" width="700%" height="700%">
+        <feGaussianBlur stdDeviation="2"></feGaussianBlur>
+      </filter>
+    </defs>
+
+    <g class="header-tab__sweep">
+      <g class="header-tab__sweep-skew">
+        <rect
+          class="header-tab__sweep-wide"
+          x="-55"
+          y="-5"
+          width="34"
+          height="58"
+          fill={`url(#${sweep})`}
+          filter={`url(#${glow})`}
+        ></rect>
+        <rect
+          class="header-tab__sweep-narrow"
+          x="-48"
+          y="-5"
+          width="16"
+          height="58"
+          fill={`url(#${sweep})`}
+          opacity=".95"
+        ></rect>
+      </g>
+    </g>
+
+    <ellipse cx="60" cy="23" rx="35" ry="13" fill="#17cfff" opacity=".04" filter={`url(#${glow})`}>
+      <animate attributeName="opacity" values=".03;.13;.03" dur="2.2s" repeatCount="indefinite"></animate>
+      <animate attributeName="rx" values="28;42;28" dur="2.2s" repeatCount="indefinite"></animate>
+    </ellipse>
+
+    <g class="header-tab__active-fx" opacity={active ? undefined : 0}>
+      <rect x="10" y="38" width="100" height="2" rx="1" fill="#0ccfff" opacity=".9"></rect>
+      <circle cx="12" cy="39" r="4" fill="#4ee7ff" opacity=".35" filter={`url(#${dotGlow})`}>
+        <animate attributeName="cx" values="12;108;12" dur="2.4s" repeatCount="indefinite"></animate>
+      </circle>
+      <circle cx="12" cy="39" r="1.8" fill="#d9fbff">
+        <animate attributeName="cx" values="12;108;12" dur="2.4s" repeatCount="indefinite"></animate>
+      </circle>
+    </g>
+  </svg>
+  <span class="header-tab__label" data-i18n={i18n}>{label}</span>
+  <span class="header-tab__slot">
+    <slot />
+  </span>
+</Tag>

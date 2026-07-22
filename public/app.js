@@ -184,7 +184,7 @@
     }
     currentMode = mode;
 
-    document.querySelectorAll('.header-cta[data-mode]').forEach((btn) => {
+    document.querySelectorAll('.header-tab[data-mode], .header-cta[data-mode]').forEach((btn) => {
       const on = btn.getAttribute('data-mode') === mode;
       btn.classList.toggle('is-active', on);
     });
@@ -695,7 +695,7 @@
     setNavOpen(!document.body.classList.contains('nav-open'));
   });
 
-  document.querySelectorAll('.header-cta[data-mode]').forEach((btn) => {
+  document.querySelectorAll('.header-tab[data-mode], .header-cta[data-mode]').forEach((btn) => {
     btn.addEventListener('click', () => setMode(btn.getAttribute('data-mode')));
   });
 

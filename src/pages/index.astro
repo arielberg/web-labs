@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CommsHero from '../components/CommsHero.astro';
+import LogoAnimated from '../components/LogoAnimated.astro';
 import { getCollection } from 'astro:content';
 
 const articles = (await getCollection('articles'))
@@ -28,7 +29,7 @@ const formatDate = (d: Date) =>
       <div class="hero__glow" aria-hidden="true"></div>
       <div class="hero__inner">
         <div class="logo logo--hero" aria-label="Web Labs">
-          <img class="logo__img" src="/logo.svg" alt="Web Labs" width="280" height="210" />
+          <LogoAnimated uid="hero" />
         </div>
 
         <CommsHero />
