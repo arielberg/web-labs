@@ -1,6 +1,12 @@
 ---
 import HeaderTab from './HeaderTab.astro';
+import LogoAnimated from './LogoAnimated.astro';
 
+interface Props {
+  home?: boolean;
+}
+
+const { home = false } = Astro.props;
 const path = Astro.url.pathname;
 const links = [
   { href: '/', label: 'בית', uid: 'home', match: (p: string) => p === '/' },
@@ -11,58 +17,93 @@ const links = [
 ---
 
 <header class="site-header" id="topbar">
-  <button
-    type="button"
-    class="menu-toggle"
-    id="navToggle"
-    aria-expanded="false"
-    aria-controls="siteNav"
-    aria-label="תפריט ניווט"
-  >
-    <span class="menu-toggle__bars" aria-hidden="true">
-      <i></i><i></i><i></i>
-    </span>
-  </button>
+  <div class="site-header__nav-wrap">
+    <button
+      type="button"
+      class="menu-toggle"
+      id="navToggle"
+      aria-expanded="false"
+      aria-controls="siteNav"
+      aria-label="תפריט ניווט"
+    >
+      <span class="menu-toggle__bars" aria-hidden="true">
+        <i></i><i></i><i></i>
+      </span>
+    </button>
 
-  <nav class="site-nav" id="siteNav" aria-label="ניווט ראשי">
-    {
-      links.map((link) => (
-        <HeaderTab
-          href={link.href}
-          label={link.label}
-          uid={link.uid}
-          active={link.match(path)}
-        />
-      ))
-    }
-  </nav>
-
-  <div class="site-header__actions">
-    <HeaderTab label="צ׳אט" uid="chat" mode="chat" i18n="cta.chat" ariaLabel="צ׳אט">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
-        ><path
-          d="M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7A2.5 2.5 0 0 1 16.5 16H11l-4 3.5V16H7.5A2.5 2.5 0 0 1 5 13.5v-7Z"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linejoin="round"></path></svg
-      >
-    </HeaderTab>
-    <HeaderTab label="טלפון" uid="phone" mode="phone" i18n="cta.phone" ariaLabel="טלפון">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
-        ><path
-          d="M7.5 3.5h3l1.2 4.2-2 1.4a12.5 12.5 0 0 0 5.2 5.2l1.4-2 4.2 1.2v3A1.8 1.8 0 0 1 18.7 18 14.5 14.5 0 0 1 6 5.3a1.8 1.8 0 0 1 1.5-1.8Z"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linejoin="round"></path></svg
-      >
-    </HeaderTab>
+    <nav class="site-nav" id="siteNav" aria-label="ניווט ראשי">
+      {
+        links.map((link) => (
+          <HeaderTab
+            href={link.href}
+            label={link.label}
+            uid={link.uid}
+            active={link.match(path)}
+          />
+        ))
+      }
+    </nav>
   </div>
 
-  <div class="site-header__tools" id="topTools" aria-hidden="true"></div>
-
-  <a class="site-header__brand" href="/" aria-label="Web Labs">
-    <img class="site-header__logo" src="/logo.svg" alt="" width="48" height="36" />
+  <a
+    class:list={['site-header__brand', { 'site-header__brand--home': home }]}
+    href="/"
+    aria-label="Web Labs"
+  >
+    <LogoAnimated uid="nav" variant="header" />
   </a>
 
-  <button type="button" class="lang-btn" id="langToggle" aria-label="Switch language">EN</button>
+  <div class="site-header__meta">
+    <div class="site-header__tools" id="topTools" aria-hidden="true"></div>
+    <button type="button" class="lang-btn" id="langToggle" aria-label="Switch language">EN</button>
+  </div>
 </header>
+
+<aside class="side-comms" aria-label="יצירת קשר">
+  <HeaderTab label="צ׳אט" uid="chat" mode="chat" i18n="cta.chat" ariaLabel="צ׳אט">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+      ><path
+        d="M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7A2.5 2.5 0 0 1 16.5 16H11l-4 3.5V16H7.5A2.5 2.5 0 0 1 5 13.5v-7Z"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linejoin="round"></path></svg
+    >
+  </HeaderTab>
+  <HeaderTab label="טלפון" uid="phone" mode="phone" i18n="cta.phone" ariaLabel="טלפון">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+      ><path
+        d="M7.5 3.5h3l1.2 4.2-2 1.4a12.5 12.5 0 0 0 5.2 5.2l1.4-2 4.2 1.2v3A1.8 1.8 0 0 1 18.7 18 14.5 14.5 0 0 1 6 5.3a1.8 1.8 0 0 1 1.5-1.8Z"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linejoin="round"></path></svg
+    >
+  </HeaderTab>
+</aside>
+
+{
+  home && (
+    <script is:inline>
+      (() => {
+        const hero = document.querySelector('.logo--hero');
+        if (!hero) return;
+
+        const sync = (visible) => {
+          document.body.classList.toggle('header-brand-on', !visible);
+        };
+
+        if ('IntersectionObserver' in window) {
+          const io = new IntersectionObserver(
+            ([entry]) => sync(entry.isIntersecting),
+            { root: null, threshold: 0, rootMargin: '-4rem 0px 0px 0px' }
+          );
+          io.observe(hero);
+          return;
+        }
+
+        const onScroll = () => sync(hero.getBoundingClientRect().bottom > 64);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      })();
+    </script>
+  )
+}

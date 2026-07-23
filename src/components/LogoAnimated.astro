@@ -2,9 +2,11 @@
 interface Props {
   uid?: string;
   class?: string;
+  /** hero = large homepage mark; header = compact top-bar mark */
+  variant?: 'hero' | 'header';
 }
 
-const { uid = 'wl', class: className = '' } = Astro.props;
+const { uid = 'wl', class: className = '', variant = 'hero' } = Astro.props;
 const cyan = `${uid}-cyan`;
 const shine = `${uid}-shine`;
 const glow = `${uid}-glow`;
@@ -25,26 +27,27 @@ const wordClip = `${uid}-wordClip`;
 ---
 
 <svg
-  class:list={['logo-animated', className]}
+  class:list={['logo-animated', `logo-animated--${variant}`, className]}
   xmlns="http://www.w3.org/2000/svg"
-  width="320"
+  width="280"
   height="120"
-  viewBox="48 40 270 95"
+  viewBox="48 40 230 95"
   role="img"
   aria-label="Web Labs"
   style={`--logo-draw-end: ${drawEndSec}s; --logo-shine-begin: ${shineBeginSec}s; --logo-shine-dur: ${shineDurSec}s`}
 >
   <defs>
     <linearGradient id={cyan} x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#00b7ff"></stop>
-      <stop offset=".8" stop-color="#fff"></stop>
-      <stop offset="1" stop-color="#00b7ff"></stop>
+      <stop offset="0" stop-color="#7fffd4"></stop>
+      <stop offset=".48" stop-color="#22d3ee"></stop>
+      <stop offset="1" stop-color="#00bfff"></stop>
     </linearGradient>
 
     <linearGradient id={shine} x1="0" x2="1">
-      <stop offset="0" stop-color="white" stop-opacity="0"></stop>
-      <stop offset=".5" stop-color="white" stop-opacity=".9"></stop>
-      <stop offset="1" stop-color="white" stop-opacity="0"></stop>
+      <stop offset="0" stop-color="#7fffd4" stop-opacity="0"></stop>
+      <stop offset=".45" stop-color="#e8ffff" stop-opacity=".95"></stop>
+      <stop offset=".55" stop-color="#7fffd4" stop-opacity=".55"></stop>
+      <stop offset="1" stop-color="#00bfff" stop-opacity="0"></stop>
     </linearGradient>
 
     <filter id={glow} x="-300%" y="-300%" width="700%" height="700%">
@@ -56,13 +59,13 @@ const wordClip = `${uid}-wordClip`;
     </filter>
 
     <mask id={textMask}>
-      <rect x="48" y="40" width="270" height="95" fill="black"></rect>
+      <rect x="48" y="40" width="230" height="95" fill="black"></rect>
       <!-- Expand with the shine so the bolt only lights the word band -->
       <rect x="130" y="62" width="0" height="42" fill="white">
         <animate
           attributeName="width"
           from="0"
-          to="175"
+          to="140"
           begin={`${shineBeginSec}s`}
           dur={`${shineDurSec}s`}
           fill="freeze"></animate>
@@ -74,7 +77,7 @@ const wordClip = `${uid}-wordClip`;
         <animate
           attributeName="width"
           from="0"
-          to="175"
+          to="140"
           begin={`${wordRevealBeginSec}s`}
           dur={`${shineDurSec}s`}
           fill="freeze"></animate>
@@ -85,10 +88,10 @@ const wordClip = `${uid}-wordClip`;
   <ellipse cx="175" cy="75" rx="120" ry="40" fill="#00d8ff" opacity=".06" filter={`url(#${glow})`}
   ></ellipse>
 
-  <!-- W + bar (tight bounds: x≈58–300, y≈55–113) -->
+  <!-- W + bar — bar ends above the "s" of eb-labs -->
   <path
     id={drawPath}
-    d="M58 55 L76 113 L94 73 L112 113 L130 55 L300 55"
+    d="M58 55 L76 113 L94 73 L112 113 L130 55 L258 55"
     fill="none"
     stroke={`url(#${cyan})`}
     stroke-width="8"
@@ -195,7 +198,7 @@ const wordClip = `${uid}-wordClip`;
         fill="freeze"></animate>
       <animate
         attributeName="x"
-        values="120;300"
+        values="120;270"
         begin={`${shineBeginSec}s`}
         dur={`${shineDurSec}s`}
         fill="freeze"></animate>
@@ -208,9 +211,18 @@ const wordClip = `${uid}-wordClip`;
     display: block;
     width: 100%;
     height: auto;
-    max-width: min(22rem, 88vw);
     direction: ltr;
     overflow: visible;
+  }
+
+  .logo-animated--hero {
+    max-width: min(26rem, 92vw);
+  }
+
+  .logo-animated--header {
+    width: auto;
+    height: 2.55rem;
+    max-width: 8.5rem;
   }
 
   .logo-animated__core {
