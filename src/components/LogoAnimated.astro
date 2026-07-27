@@ -20,18 +20,23 @@ const drawEndSec = drawBeginSec + drawDurSec;
 const drawBegin = `${drawBeginSec}s`;
 const drawDur = `${drawDurSec}s`;
 const drawEnd = `${drawEndSec}s`;
-const shineBeginSec = drawEndSec + 0.05;
-const shineDurSec = 0.75;
+const shineBeginSec = drawEndSec + 1;
+const shineDurSec = 0.5;
 const wordRevealBeginSec = shineBeginSec + 0.2;
 const wordClip = `${uid}-wordClip`;
+const textX = 153;
+const textY = 115;
+const textRevealW = 148;
+const shineStartX = textX - 8;
+const shineEndX = textX + textRevealW + 12;
 ---
 
 <svg
   class:list={['logo-animated', `logo-animated--${variant}`, className]}
   xmlns="http://www.w3.org/2000/svg"
   width="280"
-  height="120"
-  viewBox="48 40 230 95"
+  height="122"
+  viewBox="28 36 282 88"
   role="img"
   aria-label="Web Labs"
   style={`--logo-draw-end: ${drawEndSec}s; --logo-shine-begin: ${shineBeginSec}s; --logo-shine-dur: ${shineDurSec}s`}
@@ -59,13 +64,13 @@ const wordClip = `${uid}-wordClip`;
     </filter>
 
     <mask id={textMask}>
-      <rect x="48" y="40" width="230" height="95" fill="black"></rect>
+      <rect x="28" y="36" width="282" height="88" fill="black"></rect>
       <!-- Expand with the shine so the bolt only lights the word band -->
-      <rect x="130" y="62" width="0" height="42" fill="white">
+      <rect x={textX} y="76" width="0" height="44" fill="white">
         <animate
           attributeName="width"
           from="0"
-          to="140"
+          to={textRevealW}
           begin={`${shineBeginSec}s`}
           dur={`${shineDurSec}s`}
           fill="freeze"></animate>
@@ -73,11 +78,11 @@ const wordClip = `${uid}-wordClip`;
     </mask>
 
     <clipPath id={wordClip}>
-      <rect x="134" y="62" width="0" height="42">
+      <rect x={textX} y="76" width="0" height="44">
         <animate
           attributeName="width"
           from="0"
-          to="140"
+          to={textRevealW}
           begin={`${wordRevealBeginSec}s`}
           dur={`${shineDurSec}s`}
           fill="freeze"></animate>
@@ -88,10 +93,10 @@ const wordClip = `${uid}-wordClip`;
   <ellipse cx="175" cy="75" rx="120" ry="40" fill="#00d8ff" opacity=".06" filter={`url(#${glow})`}
   ></ellipse>
 
-  <!-- W + bar — bar ends above the "s" of eb-labs -->
+  <!-- W + bar -->
   <path
     id={drawPath}
-    d="M58 55 L76 113 L94 73 L112 113 L130 55 L258 55"
+    d="M60 73 L80 113 L110 73 L140 113 L160 73 L280 73"
     fill="none"
     stroke={`url(#${cyan})`}
     stroke-width="8"
@@ -136,7 +141,7 @@ const wordClip = `${uid}-wordClip`;
     </animateMotion>
   </g>
 
-  <circle cx="58" cy="55" r="0" fill="#4de8ff" opacity="0" filter={`url(#${glow})`}>
+  <circle cx="58" cy="73" r="0" fill="#4de8ff" opacity="0" filter={`url(#${glow})`}>
     <animate
       attributeName="opacity"
       values="0;.85;0"
@@ -154,7 +159,7 @@ const wordClip = `${uid}-wordClip`;
   </circle>
 
   <!-- Center glow: same orb language as the tip, settles in the W after draw -->
-  <g class="logo-animated__core" transform="translate(94 90)">
+  <g class="logo-animated__core" transform="translate(110 90)">
     <circle r="22" fill="#4de8ff" opacity=".4" filter={`url(#${glow})`}></circle>
     <circle r="10" fill="#fff" opacity=".3"></circle>
     <circle r="2.2"  opacity=".5" fill="white"></circle>
@@ -163,8 +168,8 @@ const wordClip = `${uid}-wordClip`;
   <!-- Word revealed by the same L→R wipe as the shine -->
   <g class="logo-animated__word" clip-path={`url(#${wordClip})`}>
     <text
-      x="136"
-      y="92"
+      x={textX}
+      y={textY}
       direction="ltr"
       text-anchor="start"
       font-size="34"
@@ -180,8 +185,8 @@ const wordClip = `${uid}-wordClip`;
   <!-- Shine rides the reveal edge — looks like it writes the word -->
   <g mask={`url(#${textMask})`}>
     <rect
-      x="120"
-      y="58"
+      x={shineStartX}
+      y="72"
       width="28"
       height="50"
       fill={`url(#${shine})`}
@@ -198,7 +203,7 @@ const wordClip = `${uid}-wordClip`;
         fill="freeze"></animate>
       <animate
         attributeName="x"
-        values="120;270"
+        values={`${shineStartX};${shineEndX}`}
         begin={`${shineBeginSec}s`}
         dur={`${shineDurSec}s`}
         fill="freeze"></animate>

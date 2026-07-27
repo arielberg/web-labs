@@ -38,7 +38,7 @@ def extract_svg() -> str:
     </linearGradient>
   </defs>
 
-  <path id="p" d="M58 55 L76 113 L94 73 L112 113 L130 55 L258 55"
+  <path id="p" d="M58 73 L66 113 L112 73 L150 113 L170 73 L258 73"
     fill="none" stroke="#00a8d0" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"
     pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
     <animate attributeName="stroke-dashoffset" from="1000" to="0" begin="0.1s" dur="1.1s" fill="freeze"/>
@@ -56,11 +56,11 @@ def extract_svg() -> str:
   <g opacity="0">
     <animate attributeName="opacity" values="0;1;0.55;1;0.55" keyTimes="0;0.15;0.4;0.7;1"
       begin="1.25s" dur="2.2s" repeatCount="indefinite"/>
-    <circle cx="94" cy="88" r="7" fill="#5adfff"/>
-    <circle cx="94" cy="88" r="2.8" fill="#ffffff"/>
+    <circle cx="112" cy="93" r="7" fill="#5adfff"/>
+    <circle cx="112" cy="93" r="2.8" fill="#ffffff"/>
   </g>
 
-  <text x="136" y="118" direction="ltr" text-anchor="start"
+  <text x="162" y="117" direction="ltr" text-anchor="start"
     font-size="26" font-family="DejaVu Sans, Arial, sans-serif" font-weight="700"
     fill="#00a8d0" opacity="0">
     eb-labs
