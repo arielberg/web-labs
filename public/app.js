@@ -344,16 +344,25 @@
     }
   }
 
-  /* ---------- WebRTC talk (SIP.js → Asterisk WSS) ---------- */
+  /* ---------- WebRTC talk (ElevenLabs WebRTC or SIP.js fallback) ---------- */
   const remoteAudio = document.getElementById('remoteAudio');
   let talkActive = false;
 
   const rtc = {
     simpleUser: null,
+    conversation: null,
     sessionId: null,
     mode: null,
     localStream: null,
   };
+
+  function talkMode() {
+    return String(CFG.talkMode || 'elevenlabs').trim().toLowerCase();
+  }
+
+  function talkConfigUrl() {
+    return (CFG.talkConfigUrl || 'https://mcp.w3b.works/api/talk/config').replace(/\/$/, '');
+  }
 
   function setTalkHint(key) {
     if (!key) {
@@ -380,11 +389,20 @@
 
   async function cleanupRtc() {
     const user = rtc.simpleUser;
+    const conversation = rtc.conversation;
     rtc.simpleUser = null;
+    rtc.conversation = null;
     rtc.sessionId = null;
     talkActive = false;
     heroTalkBtn.classList.remove('is-live');
     stopLocalStream();
+    if (conversation) {
+      try {
+        await conversation.endSession().catch(() => {});
+      } catch {
+        /* ignore */
+      }
+    }
     if (!user) return;
     try {
       await user.hangup().catch(() => {});
@@ -401,6 +419,80 @@
     } catch {
       /* ignore */
     }
+  }
+
+  async function loadElevenLabsClient() {
+    const version = '0.16.0';
+    const urls = [
+      `https://cdn.jsdelivr.net/npm/@elevenlabs/client@${version}/dist/lib.modern.js`,
+      `https://esm.sh/@elevenlabs/client@${version}`,
+    ];
+    let lastErr;
+    for (const url of urls) {
+      try {
+        const mod = await import(url);
+        const Conversation = mod.Conversation || mod.default?.Conversation;
+        if (typeof Conversation?.startSession === 'function') return Conversation;
+      } catch (err) {
+        lastErr = err;
+      }
+    }
+    throw lastErr || new Error('elevenlabs_client_unavailable');
+  }
+
+  async function fetchTalkConfig() {
+    const res = await fetch(talkConfigUrl());
+    if (res.status === 503 || res.status === 404) {
+      const err = new Error('talk config unavailable');
+      err.status = res.status;
+      throw err;
+    }
+    if (!res.ok) {
+      const err = new Error('talk config failed');
+      err.status = res.status;
+      throw err;
+    }
+    return res.json();
+  }
+
+  function markTalkLive() {
+    setTalkHint('talk.live');
+    talkActive = true;
+    heroTalkBtn.classList.add('is-live');
+  }
+
+  async function startElevenLabsTalk() {
+    const config = await fetchTalkConfig();
+    const agentId = config.agentId || CFG.elevenLabsAgentId;
+    if (!agentId) {
+      const err = new Error('agent_id_missing');
+      err.status = 503;
+      throw err;
+    }
+
+    const Conversation = await loadElevenLabsClient();
+    const conversation = await Conversation.startSession({
+      agentId,
+      connectionType: config.connectionType || 'webrtc',
+      dynamicVariables: {
+        caller_id: 'web',
+        source: 'web-labs',
+      },
+      onConnect: () => {
+        markTalkLive();
+      },
+      onDisconnect: () => {
+        hangupTalk();
+      },
+      onError: (message) => {
+        console.warn('[talk] elevenlabs error', message);
+      },
+    });
+
+    rtc.conversation = conversation;
+    rtc.mode = 'elevenlabs';
+    rtc.sessionId = typeof conversation.getId === 'function' ? conversation.getId() : null;
+    if (conversation.isOpen?.()) markTalkLive();
   }
 
   async function loadSipSimpleUser() {
@@ -448,6 +540,11 @@
   }
 
   async function startLiveWebRtc() {
+    if (talkMode() === 'elevenlabs') {
+      await startElevenLabsTalk();
+      return;
+    }
+
     const userId = encodeURIComponent(CFG.webrtcUserId || CFG.defaultAgentId);
     const statusRes = await fetch(`${apiBase()}/api/public/web-call/${userId}/status`);
     if (statusRes.status === 404 || statusRes.status === 503 || !statusRes.ok) {
@@ -571,14 +668,18 @@
     setTalkHint('talk.connecting');
     try {
       await startLiveWebRtc();
-      // Stay on connecting until onCallAnswered (media up).
-      if (!talkActive) setTalkHint('talk.connecting');
+      if (!talkActive && rtc.mode === 'elevenlabs') markTalkLive();
+      if (!talkActive && rtc.mode === 'sipjs') setTalkHint('talk.connecting');
     } catch (err) {
       console.warn('[talk] failed', err);
       await cleanupRtc();
-      setTalkHint(
-        err?.status === 404 || err?.status === 503 ? 'talk.unavailable' : 'status.error'
-      );
+      const unavailable =
+        err?.status === 404 ||
+        err?.status === 503 ||
+        err?.message === 'microphone_denied' ||
+        err?.message === 'agent_id_missing' ||
+        err?.message === 'elevenlabs_client_unavailable';
+      setTalkHint(unavailable ? 'talk.unavailable' : 'status.error');
     }
     heroTalkBtn.disabled = false;
   }

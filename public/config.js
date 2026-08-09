@@ -14,6 +14,9 @@ window.WEB_LABS_CONFIG = Object.assign(
     defaultAgentId: 'shiri',
     defaultFlow: 'lead',
     webrtcUserId: 'shiri',
+    talkMode: 'elevenlabs',
+    talkConfigUrl: 'https://mcp.w3b.works/api/talk/config',
+    elevenLabsAgentId: '',
     demoMode: false,
     features: {
       chat: true,
