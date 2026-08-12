@@ -364,6 +364,33 @@
     return (CFG.talkConfigUrl || 'https://mcp.w3b.works/api/talk/config').replace(/\/$/, '');
   }
 
+  function resolveTalkTokenUrl(config) {
+    const raw = config?.tokenUrl;
+    if (raw) {
+      if (/^https?:\/\//i.test(raw)) return raw.replace(/\/$/, '');
+      const base = new URL(talkConfigUrl());
+      return `${base.origin}${raw.startsWith('/') ? raw : `/${raw}`}`;
+    }
+    return talkConfigUrl().replace(/\/config$/, '/token');
+  }
+
+  async function fetchTalkToken(config) {
+    const res = await fetch(resolveTalkTokenUrl(config));
+    if (!res.ok) {
+      let body = {};
+      try {
+        body = await res.json();
+      } catch {
+        body = {};
+      }
+      const err = new Error(body.message || body.error || 'talk token failed');
+      err.status = res.status;
+      err.code = body.error;
+      throw err;
+    }
+    return res.json();
+  }
+
   function setTalkHint(key) {
     if (!key) {
       talkHint.textContent = '';
@@ -464,15 +491,10 @@
   async function startElevenLabsTalk() {
     const config = await fetchTalkConfig();
     const agentId = config.agentId || CFG.elevenLabsAgentId;
-    if (!agentId) {
-      const err = new Error('agent_id_missing');
-      err.status = 503;
-      throw err;
-    }
+    const useToken = config.auth === 'token' || Boolean(config.tokenUrl);
 
     const Conversation = await loadElevenLabsClient();
-    const conversation = await Conversation.startSession({
-      agentId,
+    const sessionOptions = {
       connectionType: config.connectionType || 'webrtc',
       dynamicVariables: {
         caller_id: 'web',
@@ -487,7 +509,27 @@
       onError: (message) => {
         console.warn('[talk] elevenlabs error', message);
       },
-    });
+    };
+
+    if (useToken) {
+      const tokenBody = await fetchTalkToken(config);
+      const conversationToken = tokenBody.conversationToken || tokenBody.token;
+      if (!conversationToken) {
+        const err = new Error('talk_token_missing');
+        err.status = 502;
+        throw err;
+      }
+      sessionOptions.conversationToken = conversationToken;
+    } else {
+      if (!agentId) {
+        const err = new Error('agent_id_missing');
+        err.status = 503;
+        throw err;
+      }
+      sessionOptions.agentId = agentId;
+    }
+
+    const conversation = await Conversation.startSession(sessionOptions);
 
     rtc.conversation = conversation;
     rtc.mode = 'elevenlabs';
