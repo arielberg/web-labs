@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactSection from '../components/ContactSection.astro';
+
+const fitItems = [
+  ['partners.fit.i1', 'נדרש ארכיטקט לפרויקט שכבר נמכר.'],
+  ['partners.fit.i2', 'הצוות זקוק לחיזוק נקודתי בתחום Salesforce או אינטגרציות.'],
+  ['partners.fit.i3', 'נדרשת הערכת פתרון לפני הגשת הצעה.'],
+  ['partners.fit.i4', 'פרויקט קיים נתקל בבעיה טכנולוגית או ארכיטקטונית.'],
+  ['partners.fit.i5', 'רוצים להוסיף יכולות AI בלי להקים התמחות חדשה בתוך החברה.'],
+];
+
+const modelItems = [
+  ['partners.model.i1', 'ספרינט תכנון ממוקד'],
+  ['partners.model.i2', 'חבילת שעות לפרויקט מוגדר'],
+  ['partners.model.i3', 'ליווי קבוע בהיקף חלקי'],
+  ['partners.model.i4', 'ביקורת ארכיטקטורה'],
+  ['partners.model.i5', 'קבלנות משנה תחת הספק הראשי'],
+];
+---
+
+<BaseLayout
+  title="לספקי טכנולוגיה"
+  description="יכולת טכנולוגית בכירה לבתי תוכנה, חברות אינטגרציה ושותפי Salesforce — ארכיטקטורה, פתרון בעיות מורכבות וחיבור בין מערכות, אבטחה ו-AI."
+  canonicalPath="/technology-partners/"
+>
+  <main class="page page--wide" id="top">
+    <article class="page__article">
+      <p class="page__eyebrow" data-i18n="partners.eyebrow">לספקי טכנולוגיה</p>
+      <h1 data-i18n="partners.title">יכולת טכנולוגית בכירה לפרויקט שלכם</h1>
+      <p class="page__lead" data-i18n="partners.lead">
+        Web Labs משתלבת לצד בתי תוכנה, חברות אינטגרציה ושותפי Salesforce כאשר פרויקט דורש ארכיטקטורה, פתרון בעיות מורכבות או חיבור בין מערכות, אבטחה ו-AI.
+      </p>
+
+      <section class="page-block" aria-labelledby="partners-fit-heading">
+        <h2 id="partners-fit-heading" data-i18n="partners.fitTitle">מתי שיתוף הפעולה מתאים?</h2>
+        <ul class="plain-list">
+          {
+            fitItems.map(([key, text]) => (
+              <li data-i18n={key}>{text}</li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="page-block" aria-labelledby="partners-model-heading">
+        <h2 id="partners-model-heading" data-i18n="partners.modelTitle">מודלים אפשריים לעבודה</h2>
+        <ul class="plain-list">
+          {
+            modelItems.map(([key, text]) => (
+              <li data-i18n={key}>{text}</li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <p class="page-block">
+        <a class="btn btn--primary" href="#contact" data-inquiry="partner" data-i18n="partners.cta">
+          נדבר על הפרויקט הפעיל
+        </a>
+      </p>
+    </article>
+  </main>
+  <ContactSection defaultType="partner" />
+</BaseLayout>

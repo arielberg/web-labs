@@ -1,24 +1,33 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactSection from '../components/ContactSection.astro';
 ---
 
 <BaseLayout
   title="עלינו"
-  description="Web Labs מתמחה בארכיטקטורת פתרונות חדשנית ומתקדמת — סוכני קול, בינה מלאכותית ומערכות Enterprise."
+  description="Web Labs היא סטודיו לארכיטקטורה וביצוע של מערכות ארגוניות — Salesforce, אינטגרציות וסוכני AI עבור חברות טכנולוגיה וארגונים פרטיים."
   canonicalPath="/about/"
 >
-  <main class="page" id="about">
+  <main class="page" id="top">
     <article class="page__article about-page">
       <p class="page__eyebrow" data-i18n="about.eyebrow">עלינו</p>
-      <h1 data-i18n="about.title">Architecture. Intelligence. Trust.</h1>
-      <p class="page__lead" data-i18n="about.lead">
-        Web Labs מתמחה בארכיטקטורת פתרונות חדשנית ומתקדמת. דברו איתנו!
-      </p>
-      <div class="contact__rows" id="contact">
-        <a href="mailto:info@web-labs.com">info@web-labs.com</a>
-        <a href="tel:+972772200005">077-2200005</a>
-        <a href="https://web-labs.com" rel="noopener">web-labs.com</a>
+      <h1 data-i18n="about.title">עלינו</h1>
+      <div class="about-copy">
+        <p data-i18n="about.p1">Web Labs היא סטודיו לארכיטקטורה וביצוע של מערכות ארגוניות.</p>
+        <p data-i18n="about.p2">
+          אנחנו מסייעים לחברות טכנולוגיה ולארגונים פרטיים לתכנן ולבנות פתרונות מורכבים בתחומי Salesforce, אינטגרציות וסוכני AI.
+        </p>
+        <p data-i18n="about.p3">
+          הפעילות מובלת על ידי אריאל ברג, ארכיטקט טכנולוגי עם ניסיון בפיתוח מערכות Enterprise, Salesforce, AWS, אבטחה, Identity ואינטגרציות. העבודה משלבת ראייה מערכתית עם יכולת ביצוע מעשית — מהגדרת הפתרון ועד מערכת עובדת.
+        </p>
+        <p data-i18n="about.p4">
+          ניתן לעבוד איתנו בפרויקט מלא, בספרינט ארכיטקטורה ממוקד או כחיזוק מקצועי לצוות קיים.
+        </p>
+      </div>
+      <div class="contact__rows">
+        <a href="https://w3b-labs.com" rel="noopener">w3b-labs.com</a>
       </div>
     </article>
   </main>
+  <ContactSection />
 </BaseLayout>

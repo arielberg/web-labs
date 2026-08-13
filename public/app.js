@@ -7,7 +7,66 @@
       'cta.talk': 'דבר',
       'cta.chat': 'צ׳אט',
       'cta.phone': 'טלפון',
-      'hero.slogan': 'בונים מערכות. חושבים חכם.',
+      'nav.home': 'בית',
+      'nav.services': 'שירותים',
+      'nav.partners': 'לספקי טכנולוגיה',
+      'nav.experience': 'ניסיון',
+      'nav.articles': 'מאמרים',
+      'nav.about': 'עלינו',
+      'nav.contact': 'יצירת קשר',
+      'nav.news': 'חדשות',
+      'nav.menu': 'תפריט ניווט',
+      'nav.aria': 'ניווט ראשי',
+      'nav.comms': 'יצירת קשר',
+      'nav.footer': 'קישורים נוספים',
+      'a11y.skip': 'דילוג לתוכן',
+      'hero.title': 'ארכיטקטורה וביצוע לפרויקטים מורכבים',
+      'hero.sub': 'Salesforce, אינטגרציות וסוכני AI המחוברים למערכות ארגוניות — משלב התכנון ועד מערכת עובדת.',
+      'hero.audience': 'עבור בתי תוכנה, חברות אינטגרציה וארגונים פרטיים הזקוקים ליכולת טכנולוגית בכירה.',
+      'hero.ctaPrimary': 'נדבר על הפרויקט',
+      'hero.ctaSecondary': 'צריכים ארכיטקט לפרויקט פעיל?',
+      'svc.title': 'שירותים',
+      'svc.partners.title': 'שותפות טכנולוגית לספקים',
+      'svc.partners.lead': 'חיזוק צוותי פיתוח ואינטגרציה בפרויקטים הדורשים ארכיטקטורה, Salesforce, אבטחה או חיבור מערכות מורכב.',
+      'svc.partners.i1': 'תכנון פתרון והערכת מאמץ',
+      'svc.partners.i2': 'ליווי צוותי פיתוח',
+      'svc.partners.i3': 'ביקורת ארכיטקטורה',
+      'svc.partners.i4': 'פתרון נקודות תקועות',
+      'svc.partners.i5': 'השתלבות בפרויקט כקבלן משנה',
+      'svc.sf.title': 'Salesforce ואינטגרציות',
+      'svc.sf.lead': 'תכנון ויישום של פתרונות Salesforce המחוברים למערכות ולתהליכים הארגוניים.',
+      'svc.sf.i1': 'APIs ואינטגרציות',
+      'svc.sf.i2': 'Identity, SSO ו-MFA',
+      'svc.sf.i3': 'הרשאות ואבטחה',
+      'svc.sf.i4': 'תכנון נתונים ותהליכים',
+      'svc.sf.i5': 'ביצועים, DevOps וייצוב מערכות',
+      'svc.ai.title': 'AI המחובר לארגון',
+      'svc.ai.lead': 'מעבר מאב־טיפוס של AI למערכת מאובטחת, מבוקרת ושימושית המחוברת לסביבה הארגונית.',
+      'svc.ai.i1': 'סוכנים המחוברים ל-CRM ולמערכות מידע',
+      'svc.ai.i2': 'חיפוש וידע ארגוני',
+      'svc.ai.i3': 'אוטומציה של שירות ותפעול',
+      'svc.ai.i4': 'הרשאות, Audit ו-Governance',
+      'svc.ai.i5': 'סוכני קול כחלק מתהליך עסקי',
+      'when.title': 'מתי Web Labs יכולה לעזור?',
+      'when.i1': 'התקבל פרויקט מורכב וחסרה יכולת ארכיטקטורה בכירה.',
+      'when.i2': 'אינטגרציה בין מערכות נתקעה או נעשתה קשה לתחזוקה.',
+      'when.i3': 'רוצים להוסיף AI למערכת קיימת בלי להחליף את התשתית.',
+      'when.i4': 'אב־טיפוס של AI צריך להפוך לפתרון מאובטח ויציב.',
+      'when.i5': 'נדרשת בדיקה מקצועית לפני פיתוח, הצעת מחיר או עלייה לייצור.',
+      'sprint.title': 'ספרינט ארכיטקטורה',
+      'sprint.lead': 'תהליך ממוקד להגדרת הפתרון, המערכות, האינטגרציות, ההרשאות ותוכנית הביצוע.',
+      'sprint.i1': 'מסמך ארכיטקטורה',
+      'sprint.i2': 'גבולות הפרויקט',
+      'sprint.i3': 'סיכונים והחלטות מרכזיות',
+      'sprint.i4': 'הערכת שלבים ומאמץ',
+      'sprint.i5': 'תוכנית יישום מעשית',
+      'sprint.cta': 'בדיקת התאמה לספרינט',
+      'exp.title': 'ניסיון שמחבר בין ארכיטקטורה לביצוע',
+      'exp.lead': 'ניסיון מעשי בתכנון ופיתוח של מערכות Enterprise, Salesforce, AWS, APIs, אבטחה, Identity וסוכני AI. העבודה משלבת ראייה מערכתית עם יכולת לרדת לפרטי היישום, הקוד וההטמעה.',
+      'demo.title': 'רוצים לראות סוכן בפעולה?',
+      'demo.lead': 'הצ׳אט וסוכן הטלפון באתר פועלים על תשתית הסוכנים של Web Labs. אפשר לדבר איתם, להשאיר פרטים או לבקש שיחה.',
+      'articles.teaserTitle': 'ידע מעשי על מערכות ו-AI ארגוני',
+      'articles.more': 'הכל',
       'chat.eyebrow': 'צ׳אט',
       'chat.placeholder': 'כתבו בצ׳אט…',
       'chat.send': 'שלח',
@@ -35,8 +94,44 @@
       'phone.badPhone': 'נא להזין מספר טלפון תקין.',
       'phone.error': 'לא הצלחנו לשלוח את הבקשה. נסו שוב מאוחר יותר.',
       'about.eyebrow': 'עלינו',
-      'about.title': 'Architecture. Intelligence. Trust.',
-      'about.lead': 'Web Labs מתמחה בארכיטקטורת פתרונות חדשנית ומתקדמת.\nדברו איתנו!',
+      'about.title': 'עלינו',
+      'about.p1': 'Web Labs היא סטודיו לארכיטקטורה וביצוע של מערכות ארגוניות.',
+      'about.p2': 'אנחנו מסייעים לחברות טכנולוגיה ולארגונים פרטיים לתכנן ולבנות פתרונות מורכבים בתחומי Salesforce, אינטגרציות וסוכני AI.',
+      'about.p3': 'הפעילות מובלת על ידי אריאל ברג, ארכיטקט טכנולוגי עם ניסיון בפיתוח מערכות Enterprise, Salesforce, AWS, אבטחה, Identity ואינטגרציות. העבודה משלבת ראייה מערכתית עם יכולת ביצוע מעשית — מהגדרת הפתרון ועד מערכת עובדת.',
+      'about.p4': 'ניתן לעבוד איתנו בפרויקט מלא, בספרינט ארכיטקטורה ממוקד או כחיזוק מקצועי לצוות קיים.',
+      'partners.eyebrow': 'לספקי טכנולוגיה',
+      'partners.title': 'יכולת טכנולוגית בכירה לפרויקט שלכם',
+      'partners.lead': 'Web Labs משתלבת לצד בתי תוכנה, חברות אינטגרציה ושותפי Salesforce כאשר פרויקט דורש ארכיטקטורה, פתרון בעיות מורכבות או חיבור בין מערכות, אבטחה ו-AI.',
+      'partners.fitTitle': 'מתי שיתוף הפעולה מתאים?',
+      'partners.fit.i1': 'נדרש ארכיטקט לפרויקט שכבר נמכר.',
+      'partners.fit.i2': 'הצוות זקוק לחיזוק נקודתי בתחום Salesforce או אינטגרציות.',
+      'partners.fit.i3': 'נדרשת הערכת פתרון לפני הגשת הצעה.',
+      'partners.fit.i4': 'פרויקט קיים נתקל בבעיה טכנולוגית או ארכיטקטונית.',
+      'partners.fit.i5': 'רוצים להוסיף יכולות AI בלי להקים התמחות חדשה בתוך החברה.',
+      'partners.modelTitle': 'מודלים אפשריים לעבודה',
+      'partners.model.i1': 'ספרינט תכנון ממוקד',
+      'partners.model.i2': 'חבילת שעות לפרויקט מוגדר',
+      'partners.model.i3': 'ליווי קבוע בהיקף חלקי',
+      'partners.model.i4': 'ביקורת ארכיטקטורה',
+      'partners.model.i5': 'קבלנות משנה תחת הספק הראשי',
+      'partners.cta': 'נדבר על הפרויקט הפעיל',
+      'contact.title': 'יש פרויקט שדורש חשיבה טכנולוגית בכירה?',
+      'contact.lead': 'כתבו בקצרה מה המערכת, מה האתגר ובאיזה שלב נמצא הפרויקט. נחזור לשיחת התאמה ממוקדת.',
+      'contact.name': 'שם',
+      'contact.company': 'חברה',
+      'contact.reach': 'טלפון או דוא״ל',
+      'contact.type': 'סוג הפנייה',
+      'contact.typePlaceholder': 'בחרו סוג פנייה',
+      'contact.typeDirect': 'פרויקט ישיר',
+      'contact.typePartner': 'שיתוף פעולה עם ספק טכנולוגי',
+      'contact.typeSprint': 'ספרינט ארכיטקטורה',
+      'contact.typeOther': 'אחר',
+      'contact.challenge': 'תיאור קצר של האתגר',
+      'contact.submit': 'שליחת הפנייה',
+      'contact.required': 'נא למלא את השדות הנדרשים.',
+      'contact.badReach': 'נא להזין טלפון או דוא״ל תקין.',
+      'contact.mailOpened': 'נפתח יישום הדוא״ל שלכם. אם הוא לא נפתח, כתבו אלינו ישירות.',
+      'contact.mailSubject': 'פנייה מאתר Web Labs',
       'footer.copy': 'Architecture. Intelligence. Trust.',
       'status.ready': 'מוכן',
       'status.live': 'פעיל',
@@ -48,7 +143,66 @@
       'cta.talk': 'Talk',
       'cta.chat': 'Chat',
       'cta.phone': 'Phone',
-      'hero.slogan': 'Building systems. Thinking smart.',
+      'nav.home': 'Home',
+      'nav.services': 'Services',
+      'nav.partners': 'For technology vendors',
+      'nav.experience': 'Experience',
+      'nav.articles': 'Articles',
+      'nav.about': 'About',
+      'nav.contact': 'Contact',
+      'nav.news': 'News',
+      'nav.menu': 'Navigation menu',
+      'nav.aria': 'Main navigation',
+      'nav.comms': 'Contact',
+      'nav.footer': 'Additional links',
+      'a11y.skip': 'Skip to content',
+      'hero.title': 'Architecture and delivery for complex projects',
+      'hero.sub': 'Salesforce, integrations, and AI agents connected to enterprise systems — from planning through a working system.',
+      'hero.audience': 'For software houses, integration firms, and private organizations that need senior technical capability.',
+      'hero.ctaPrimary': 'Let’s talk about the project',
+      'hero.ctaSecondary': 'Need an architect for an active project?',
+      'svc.title': 'Services',
+      'svc.partners.title': 'Technology partnership for vendors',
+      'svc.partners.lead': 'Strengthening development and integration teams on projects that require architecture, Salesforce, security, or complex system connectivity.',
+      'svc.partners.i1': 'Solution design and effort estimate',
+      'svc.partners.i2': 'Development team support',
+      'svc.partners.i3': 'Architecture review',
+      'svc.partners.i4': 'Unblocking stuck points',
+      'svc.partners.i5': 'Joining a project as a subcontractor',
+      'svc.sf.title': 'Salesforce and integrations',
+      'svc.sf.lead': 'Design and implementation of Salesforce solutions connected to organizational systems and processes.',
+      'svc.sf.i1': 'APIs and integrations',
+      'svc.sf.i2': 'Identity, SSO, and MFA',
+      'svc.sf.i3': 'Permissions and security',
+      'svc.sf.i4': 'Data and process design',
+      'svc.sf.i5': 'Performance, DevOps, and system stabilization',
+      'svc.ai.title': 'AI connected to the organization',
+      'svc.ai.lead': 'From an AI prototype to a secure, governed, and useful system connected to the enterprise environment.',
+      'svc.ai.i1': 'Agents connected to CRM and information systems',
+      'svc.ai.i2': 'Search and organizational knowledge',
+      'svc.ai.i3': 'Service and operations automation',
+      'svc.ai.i4': 'Permissions, audit, and governance',
+      'svc.ai.i5': 'Voice agents as part of a business process',
+      'when.title': 'When can Web Labs help?',
+      'when.i1': 'A complex project arrived and senior architecture capability is missing.',
+      'when.i2': 'An integration between systems is stuck or has become hard to maintain.',
+      'when.i3': 'You want to add AI to an existing system without replacing the infrastructure.',
+      'when.i4': 'An AI prototype needs to become a secure, stable solution.',
+      'when.i5': 'A professional review is needed before development, a proposal, or go-live.',
+      'sprint.title': 'Architecture sprint',
+      'sprint.lead': 'A focused process to define the solution, systems, integrations, permissions, and delivery plan.',
+      'sprint.i1': 'Architecture document',
+      'sprint.i2': 'Project boundaries',
+      'sprint.i3': 'Risks and key decisions',
+      'sprint.i4': 'Phased effort estimate',
+      'sprint.i5': 'Practical implementation plan',
+      'sprint.cta': 'Check fit for a sprint',
+      'exp.title': 'Experience that connects architecture to delivery',
+      'exp.lead': 'Hands-on experience designing and building Enterprise systems, Salesforce, AWS, APIs, security, Identity, and AI agents. The work combines a systems view with the ability to go down to implementation, code, and adoption details.',
+      'demo.title': 'Want to see an agent in action?',
+      'demo.lead': 'The chat and phone agent on this site run on Web Labs’ agent infrastructure. You can talk with them, leave details, or request a call.',
+      'articles.teaserTitle': 'Practical knowledge on systems and enterprise AI',
+      'articles.more': 'All',
       'chat.eyebrow': 'Chat',
       'chat.placeholder': 'Write in chat…',
       'chat.send': 'Send',
@@ -76,8 +230,44 @@
       'phone.badPhone': 'Please enter a valid phone number.',
       'phone.error': 'Could not send the request. Please try again later.',
       'about.eyebrow': 'About',
-      'about.title': 'Architecture. Intelligence. Trust.',
-      'about.lead': 'Web Labs specializes in innovative, advanced solution architecture.\nTalk to us!',
+      'about.title': 'About',
+      'about.p1': 'Web Labs is a studio for architecture and delivery of enterprise systems.',
+      'about.p2': 'We help technology companies and private organizations design and build complex solutions in Salesforce, integrations, and AI agents.',
+      'about.p3': 'The practice is led by Ariel Berg, a technology architect with experience building Enterprise systems, Salesforce, AWS, security, Identity, and integrations. The work combines a systems view with practical delivery — from defining the solution to a working system.',
+      'about.p4': 'You can work with us on a full project, in a focused architecture sprint, or as senior reinforcement for an existing team.',
+      'partners.eyebrow': 'For technology vendors',
+      'partners.title': 'Senior technical capability for your project',
+      'partners.lead': 'Web Labs joins software houses, integration firms, and Salesforce partners when a project needs architecture, complex problem-solving, or connecting systems, security, and AI.',
+      'partners.fitTitle': 'When is the collaboration a fit?',
+      'partners.fit.i1': 'An architect is needed for a project that has already been sold.',
+      'partners.fit.i2': 'The team needs targeted reinforcement in Salesforce or integrations.',
+      'partners.fit.i3': 'A solution assessment is needed before submitting a proposal.',
+      'partners.fit.i4': 'An existing project has hit a technical or architectural problem.',
+      'partners.fit.i5': 'You want to add AI capabilities without building a new specialty inside the company.',
+      'partners.modelTitle': 'Possible working models',
+      'partners.model.i1': 'Focused planning sprint',
+      'partners.model.i2': 'Hour pack for a defined project',
+      'partners.model.i3': 'Ongoing part-time support',
+      'partners.model.i4': 'Architecture review',
+      'partners.model.i5': 'Subcontracting under the prime vendor',
+      'partners.cta': 'Let’s talk about the active project',
+      'contact.title': 'Have a project that needs senior technical thinking?',
+      'contact.lead': 'Briefly describe the system, the challenge, and what stage the project is in. We’ll follow up with a focused fit conversation.',
+      'contact.name': 'Name',
+      'contact.company': 'Company',
+      'contact.reach': 'Phone or email',
+      'contact.type': 'Inquiry type',
+      'contact.typePlaceholder': 'Select an inquiry type',
+      'contact.typeDirect': 'Direct project',
+      'contact.typePartner': 'Collaboration with a technology vendor',
+      'contact.typeSprint': 'Architecture sprint',
+      'contact.typeOther': 'Other',
+      'contact.challenge': 'Short description of the challenge',
+      'contact.submit': 'Send inquiry',
+      'contact.required': 'Please fill in the required fields.',
+      'contact.badReach': 'Please enter a valid phone number or email.',
+      'contact.mailOpened': 'Your email app should open. If it doesn’t, write to us directly.',
+      'contact.mailSubject': 'Inquiry from the Web Labs website',
       'footer.copy': 'Architecture. Intelligence. Trust.',
       'status.ready': 'Ready',
       'status.live': 'Live',
@@ -229,7 +419,10 @@
     }
 
     if (scroll) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const demo = document.getElementById('agent-demo');
+      if (demo && (chatOpen || phoneOpen || showMic)) {
+        demo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     if (chatOpen && heroChat) {
@@ -392,13 +585,14 @@
   }
 
   function setTalkHint(key) {
+    if (!talkHint) return;
     if (!key) {
       talkHint.textContent = '';
       talkHint.hidden = true;
       return;
     }
     talkHint.textContent = t(key);
-    talkHint.hidden = heroTalkBtn.hidden;
+    talkHint.hidden = !heroTalkBtn || heroTalkBtn.hidden;
   }
 
   function stopLocalStream() {
@@ -852,7 +1046,7 @@
     }
   });
 
-  window.matchMedia('(min-width: 861px)').addEventListener('change', (ev) => {
+  window.matchMedia('(min-width: 1241px)').addEventListener('change', (ev) => {
     if (ev.matches) setNavOpen(false);
   });
 
@@ -875,6 +1069,83 @@
   });
 
   outboundForm?.addEventListener('submit', requestOutbound);
+
+  const contactForm = document.getElementById('contactForm');
+  const contactNote = document.getElementById('contactNote');
+  const contactType = document.getElementById('contactType');
+  const inquiryKeys = {
+    direct: 'contact.typeDirect',
+    partner: 'contact.typePartner',
+    sprint: 'contact.typeSprint',
+    other: 'contact.typeOther',
+  };
+
+  function isEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  function setInquiryType(type) {
+    if (!contactType || !type || !inquiryKeys[type]) return;
+    contactType.value = type;
+  }
+
+  function applyInquiryFromLocation() {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get('type') || params.get('inquiry');
+    const fromForm = contactForm?.getAttribute('data-default-type');
+    setInquiryType(fromUrl || fromForm);
+  }
+
+  function submitContact(ev) {
+    ev.preventDefault();
+    if (!contactForm || !contactNote) return;
+
+    const fd = new FormData(contactForm);
+    const name = String(fd.get('name') || '').trim();
+    const company = String(fd.get('company') || '').trim();
+    const reach = String(fd.get('reach') || '').trim();
+    const type = String(fd.get('type') || '').trim();
+    const challenge = String(fd.get('challenge') || '').trim();
+    contactNote.className = 'form-note';
+
+    if (!name || !reach || !type || !challenge) {
+      contactNote.textContent = t('contact.required');
+      contactNote.classList.add('is-err');
+      return;
+    }
+
+    if (!isEmail(reach) && !normalizePhone(reach)) {
+      contactNote.textContent = t('contact.badReach');
+      contactNote.classList.add('is-err');
+      return;
+    }
+
+    const typeLabel = t(inquiryKeys[type] || 'contact.typeOther');
+    const email = CFG.email || 'info@web-labs.com';
+    const lines = [
+      `${t('contact.name')}: ${name}`,
+      `${t('contact.company')}: ${company || '—'}`,
+      `${t('contact.reach')}: ${reach}`,
+      `${t('contact.type')}: ${typeLabel}`,
+      '',
+      `${t('contact.challenge')}:`,
+      challenge,
+    ];
+    const mailto = `mailto:${email}?subject=${encodeURIComponent(`${t('contact.mailSubject')} — ${typeLabel}`)}&body=${encodeURIComponent(lines.join('\n'))}`;
+    window.location.href = mailto;
+    contactNote.textContent = t('contact.mailOpened');
+    contactNote.classList.add('is-ok');
+  }
+
+  contactForm?.addEventListener('submit', submitContact);
+
+  document.querySelectorAll('[data-inquiry]').forEach((el) => {
+    el.addEventListener('click', () => {
+      setInquiryType(el.getAttribute('data-inquiry'));
+    });
+  });
+
+  applyInquiryFromLocation();
 
   async function probeApiHealth() {
     try {
@@ -937,7 +1208,8 @@
     heroTalkBtn.style.setProperty('--mic-encourage', '1');
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
+    const demoStage = document.getElementById('agent-demo');
+    if (reduceMotion || demoStage) {
       revealSlogan();
       revealMicButton();
       return;
@@ -967,8 +1239,16 @@
     heroTalkBtn.classList.add('is-encourage-pulse');
   }, encourageEveryMs);
 
-  document.getElementById('inboundDial').href = `tel:+${CFG.inboundDidE164}`;
-  document.querySelector('#inboundDial .dial-card__number').textContent = CFG.inboundDid;
-  document.querySelector('.dial-card--alt').href = `tel:+${CFG.companyPhoneE164}`;
-  document.querySelector('.dial-card--alt .dial-card__number').textContent = CFG.companyPhone;
+  const inboundDial = document.getElementById('inboundDial');
+  if (inboundDial) {
+    inboundDial.href = `tel:+${CFG.inboundDidE164}`;
+    const inboundNumber = inboundDial.querySelector('.dial-card__number');
+    if (inboundNumber) inboundNumber.textContent = CFG.inboundDid;
+  }
+  const altDial = document.querySelector('.dial-card--alt');
+  if (altDial) {
+    altDial.href = `tel:+${CFG.companyPhoneE164}`;
+    const altNumber = altDial.querySelector('.dial-card__number');
+    if (altNumber) altNumber.textContent = CFG.companyPhone;
+  }
 })();

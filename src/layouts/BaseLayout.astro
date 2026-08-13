@@ -16,7 +16,7 @@ interface Props {
 
 const {
   title,
-  description = 'Web Labs — ארכיטקטורה, בינה מלאכותית ואמון. סוכני קול, Salesforce ומערכות Enterprise.',
+  description = 'ארכיטקטורה וביצוע לפרויקטים מורכבים של Salesforce, אינטגרציות וסוכני AI עבור חברות טכנולוגיה וארגונים פרטיים.',
   canonicalPath = Astro.url.pathname,
   ogType = 'website',
   jsonLd,
@@ -65,6 +65,7 @@ const pageTitle = title.includes('Web Labs') ? title : `${title} — Web Labs`;
     </script>
   </head>
   <body class:list={[{ 'is-home': home }]}>
+    <a class="skip-link" href="#top" data-i18n="a11y.skip">דילוג לתוכן</a>
     <Ambient />
     <SiteNav home={home} />
     <slot />

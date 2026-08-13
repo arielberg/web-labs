@@ -8,11 +8,51 @@ interface Props {
 
 const { home = false } = Astro.props;
 const path = Astro.url.pathname;
+const onHome = path === '/' || path === '';
 const links = [
-  { href: '/', label: 'בית', uid: 'home', match: (p: string) => p === '/' },
-  { href: '/articles/', label: 'מאמרים', uid: 'articles', match: (p: string) => p.startsWith('/articles') },
-  { href: '/news/', label: 'חדשות', uid: 'news', match: (p: string) => p.startsWith('/news') },
-  { href: '/about/', label: 'עלינו', uid: 'about', match: (p: string) => p.startsWith('/about') },
+  { href: '/', label: 'בית', uid: 'home', i18n: 'nav.home', match: (p: string) => p === '/' || p === '' },
+  {
+    href: onHome ? '#services' : '/#services',
+    label: 'שירותים',
+    uid: 'services',
+    i18n: 'nav.services',
+    match: () => false,
+  },
+  {
+    href: '/technology-partners/',
+    label: 'לספקי טכנולוגיה',
+    uid: 'partners',
+    i18n: 'nav.partners',
+    match: (p: string) => p.startsWith('/technology-partners'),
+  },
+  {
+    href: onHome ? '#experience' : '/#experience',
+    label: 'ניסיון',
+    uid: 'experience',
+    i18n: 'nav.experience',
+    match: () => false,
+  },
+  {
+    href: '/articles/',
+    label: 'מאמרים',
+    uid: 'articles',
+    i18n: 'nav.articles',
+    match: (p: string) => p.startsWith('/articles'),
+  },
+  {
+    href: '/about/',
+    label: 'עלינו',
+    uid: 'about',
+    i18n: 'nav.about',
+    match: (p: string) => p.startsWith('/about'),
+  },
+  {
+    href: onHome ? '#contact' : '/#contact',
+    label: 'יצירת קשר',
+    uid: 'contact',
+    i18n: 'nav.contact',
+    match: () => false,
+  },
 ];
 ---
 
@@ -24,6 +64,7 @@ const links = [
       id="navToggle"
       aria-expanded="false"
       aria-controls="siteNav"
+      data-i18n-aria="nav.menu"
       aria-label="תפריט ניווט"
     >
       <span class="menu-toggle__bars" aria-hidden="true">
@@ -31,13 +72,14 @@ const links = [
       </span>
     </button>
 
-    <nav class="site-nav" id="siteNav" aria-label="ניווט ראשי">
+    <nav class="site-nav" id="siteNav" data-i18n-aria="nav.aria" aria-label="ניווט ראשי">
       {
         links.map((link) => (
           <HeaderTab
             href={link.href}
             label={link.label}
             uid={link.uid}
+            i18n={link.i18n}
             active={link.match(path)}
           />
         ))
@@ -59,7 +101,7 @@ const links = [
   </div>
 </header>
 
-<aside class="side-comms" aria-label="יצירת קשר">
+<aside class="side-comms" data-i18n-aria="nav.comms" aria-label="יצירת קשר">
   <HeaderTab label="צ׳אט" uid="chat" mode="chat" i18n="cta.chat" ariaLabel="צ׳אט">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
       ><path
