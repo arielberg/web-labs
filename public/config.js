@@ -2,6 +2,7 @@
  * Web Labs site ↔ voip-v3 telephony-api (production).
  * Site is static HTML — apiBase always points at the live API.
  * Override: window.WEB_LABS_CONFIG = { apiBase: 'https://...' }
+ * Contact form posts to the existing Cloudflare Worker at me.w3b.works/mail.
  */
 window.WEB_LABS_CONFIG = Object.assign(
   {
@@ -11,6 +12,7 @@ window.WEB_LABS_CONFIG = Object.assign(
     inboundDid: '055-5070637',
     inboundDidE164: '972555070637',
     email: 'info@web-labs.com',
+    contactApiUrl: 'https://me.w3b.works/mail',
     defaultAgentId: 'shiri',
     defaultFlow: 'lead',
     webrtcUserId: 'shiri',

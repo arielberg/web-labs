@@ -1719,6 +1719,7 @@ body:not(.is-home) .contact-band {
 }
 
 .contact-form {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
@@ -1758,6 +1759,14 @@ body:not(.is-home) .contact-band {
 .contact-form textarea {
   resize: vertical;
   min-height: 6.5rem;
+}
+
+.contact-form .hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 .contact-form input:focus,

@@ -130,8 +130,9 @@
       'contact.submit': 'שליחת הפנייה',
       'contact.required': 'נא למלא את השדות הנדרשים.',
       'contact.badReach': 'נא להזין טלפון או דוא״ל תקין.',
-      'contact.mailOpened': 'נפתח יישום הדוא״ל שלכם. אם הוא לא נפתח, כתבו אלינו ישירות.',
-      'contact.mailSubject': 'פנייה מאתר Web Labs',
+      'contact.sending': 'שולח…',
+      'contact.sent': 'הפנייה נשלחה. נחזור אליכם בהקדם.',
+      'contact.sendError': 'לא הצלחנו לשלוח את הפנייה. נסו שוב או כתבו אלינו ישירות.',
       'footer.copy': 'Architecture. Intelligence. Trust.',
       'status.ready': 'מוכן',
       'status.live': 'פעיל',
@@ -266,8 +267,9 @@
       'contact.submit': 'Send inquiry',
       'contact.required': 'Please fill in the required fields.',
       'contact.badReach': 'Please enter a valid phone number or email.',
-      'contact.mailOpened': 'Your email app should open. If it doesn’t, write to us directly.',
-      'contact.mailSubject': 'Inquiry from the Web Labs website',
+      'contact.sending': 'Sending…',
+      'contact.sent': 'Inquiry sent. We’ll get back to you shortly.',
+      'contact.sendError': 'Could not send the inquiry. Please try again or email us directly.',
       'footer.copy': 'Architecture. Intelligence. Trust.',
       'status.ready': 'Ready',
       'status.live': 'Live',
@@ -1096,7 +1098,11 @@
     setInquiryType(fromUrl || fromForm);
   }
 
-  function submitContact(ev) {
+  function contactApiUrl() {
+    return (CFG.contactApiUrl || 'https://me.w3b.works/mail').replace(/\/$/, '');
+  }
+
+  async function submitContact(ev) {
     ev.preventDefault();
     if (!contactForm || !contactNote) return;
 
@@ -1106,6 +1112,8 @@
     const reach = String(fd.get('reach') || '').trim();
     const type = String(fd.get('type') || '').trim();
     const challenge = String(fd.get('challenge') || '').trim();
+    const website = String(fd.get('website') || '').trim();
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
     contactNote.className = 'form-note';
 
     if (!name || !reach || !type || !challenge) {
@@ -1120,9 +1128,11 @@
       return;
     }
 
+    if (submitBtn) submitBtn.disabled = true;
+    contactNote.textContent = t('contact.sending');
+
     const typeLabel = t(inquiryKeys[type] || 'contact.typeOther');
-    const email = CFG.email || 'info@web-labs.com';
-    const lines = [
+    const message = [
       `${t('contact.name')}: ${name}`,
       `${t('contact.company')}: ${company || '—'}`,
       `${t('contact.reach')}: ${reach}`,
@@ -1130,11 +1140,39 @@
       '',
       `${t('contact.challenge')}:`,
       challenge,
-    ];
-    const mailto = `mailto:${email}?subject=${encodeURIComponent(`${t('contact.mailSubject')} — ${typeLabel}`)}&body=${encodeURIComponent(lines.join('\n'))}`;
-    window.location.href = mailto;
-    contactNote.textContent = t('contact.mailOpened');
-    contactNote.classList.add('is-ok');
+    ].join('\n');
+
+    try {
+      if (website) {
+        contactForm.reset();
+        applyInquiryFromLocation();
+        contactNote.textContent = t('contact.sent');
+        contactNote.classList.add('is-ok');
+        return;
+      }
+
+      const payload = { name, message };
+      if (isEmail(reach)) payload.email = reach;
+
+      const res = await fetch(contactApiUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !(data.ok || data.success)) {
+        throw new Error('send_failed');
+      }
+      contactForm.reset();
+      applyInquiryFromLocation();
+      contactNote.textContent = t('contact.sent');
+      contactNote.classList.add('is-ok');
+    } catch {
+      contactNote.textContent = t('contact.sendError');
+      contactNote.classList.add('is-err');
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
   }
 
   contactForm?.addEventListener('submit', submitContact);
