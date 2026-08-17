@@ -374,6 +374,7 @@
     if (mode === 'talk' && !featureEnabled('talk')) {
       mode = 'chat';
     }
+    const leavingChat = currentMode === 'chat' && mode !== 'chat';
     currentMode = mode;
 
     document.querySelectorAll('.header-tab[data-mode], .header-cta[data-mode]').forEach((btn) => {
@@ -433,6 +434,8 @@
     } else if (phoneOpen && heroPhone) {
       heroPhone.classList.add('is-focus');
     }
+
+    if (leavingChat) flushChatTranscript();
   }
 
   const chatState = {
@@ -443,6 +446,53 @@
     history: [],
     node: 'greet',
   };
+
+  const chatNotify = {
+    sentCount: 0,
+    inflight: false,
+    idleTimer: null,
+  };
+
+  function chatIdleMs() {
+    const value = Number(CFG.chatIdleMs);
+    return Number.isFinite(value) && value > 0 ? value : 120000;
+  }
+
+  function scheduleChatFlush() {
+    clearTimeout(chatNotify.idleTimer);
+    if (!(chatState.history || []).length) return;
+    chatNotify.idleTimer = setTimeout(() => {
+      flushChatTranscript();
+    }, chatIdleMs());
+  }
+
+  function flushChatTranscript() {
+    const history = chatState.history || [];
+    if (!history.length || history.length <= chatNotify.sentCount || chatNotify.inflight) {
+      return;
+    }
+    chatNotify.inflight = true;
+    clearTimeout(chatNotify.idleTimer);
+    const payload = JSON.stringify({
+      session_id: chatState.sessionId || undefined,
+      history,
+      lang,
+      agent_id: CFG.defaultAgentId,
+    });
+    fetch(`${apiBase()}/api/chat/complete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      keepalive: true,
+    })
+      .then((res) => {
+        if (res.ok) chatNotify.sentCount = history.length;
+      })
+      .catch(() => {})
+      .finally(() => {
+        chatNotify.inflight = false;
+      });
+  }
 
   function addBubble(text, who) {
     const el = document.createElement('div');
@@ -524,6 +574,7 @@
         if (data.session_id) chatState.sessionId = data.session_id;
         setChatStatus('status.live', 'is-live');
         chatState.mode = 'live';
+        scheduleChatFlush();
         return;
       }
       addBubble(t('chat.error'), 'agent');
@@ -1011,6 +1062,10 @@
   }
 
   /* ---------- Wire UI ---------- */
+  window.addEventListener('pagehide', () => {
+    flushChatTranscript();
+  });
+
   document.getElementById('langToggle')?.addEventListener('click', () => {
     lang = lang === 'he' ? 'en' : 'he';
     applyI18n();
@@ -1099,7 +1154,9 @@
   }
 
   function contactApiUrl() {
-    return (CFG.contactApiUrl || 'https://me.w3b.works/mail').replace(/\/$/, '');
+    const configured = String(CFG.contactApiUrl || '').trim();
+    if (configured) return configured.replace(/\/$/, '');
+    return `${apiBase()}/api/contact`;
   }
 
   async function submitContact(ev) {
